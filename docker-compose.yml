@@ -1,0 +1,13 @@
+version: "3.7"
+
+services:
+
+  snippet-manager-db:
+    container_name: snippet-manager-db
+    image: postgres
+    ports:
+      - "5435:5432"
+    environment:
+      - POSTGRES_DB=snippet-manager
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres

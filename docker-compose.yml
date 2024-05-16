@@ -2,6 +2,18 @@ version: "3.7"
 
 services:
 
+  api:
+    container_name: snippet-manager-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8083:8083
+    environment:
+      DB_URL: jdbc:postgresql://snippet-manager-db:5432/snippet-manager
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+
   snippet-manager-db:
     container_name: snippet-manager-db
     image: postgres

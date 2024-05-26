@@ -52,10 +52,6 @@ jobs:
       run: chmod +x ./gradlew
 
     - name: Build with Gradle Wrapper
-      env:
-        SPRING_DATASOURCE_URL: jdbc:postgresql://snippet-manager-db:5432/snippet-manager
-        SPRING_DATASOURCE_USERNAME: postgres
-        SPRING_DATASOURCE_PASSWORD: postgres
       run: ./gradlew build
 
    

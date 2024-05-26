@@ -26,8 +26,11 @@ class SnippetService(private val snippetRepository: SnippetRepository) {
         snippetRepository.deleteById(id)
     }
 
-    fun updateSnippet(snippetBO: SnippetBO): SnippetBO {
-        val snippetDE = SnippetMapperModel().convertSnippetBOToDE(snippetBO)
-        return SnippetMapperModel().convertSnippetDEToBO(snippetRepository.save(snippetDE))
+    fun updateSnippet(snippetBO: SnippetBO, id: Long): SnippetBO {
+        val existingSnippetDE = snippetRepository.findById(id).orElseThrow { Exception("Snippet not found") }
+
+        existingSnippetDE.setContent(snippetBO.getContent())
+
+        return SnippetMapperModel().convertSnippetDEToBO(snippetRepository.save(existingSnippetDE))
     }
 }

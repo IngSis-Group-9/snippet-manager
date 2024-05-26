@@ -5,11 +5,6 @@ import jakarta.persistence.*
 @Entity
 @Table(name = "snippets")
 data class SnippetDE(
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private val id: Long = 0,
-
     @Column(name = "name", nullable = false)
     private val name: String,
 
@@ -17,8 +12,17 @@ data class SnippetDE(
     private val type: String,
 
     @Column(name = "content", nullable = false, columnDefinition = "TEXT")
-    private val content: String,
+    private var content: String,
 ){
+
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private val id: Long = 0
+
+    fun getId(): Long {
+        return id
+    }
 
     fun getName(): String {
         return name
@@ -30,5 +34,9 @@ data class SnippetDE(
 
     fun getContent(): String {
         return content
+    }
+
+    fun setContent(content: String) {
+        this.content = content
     }
 }

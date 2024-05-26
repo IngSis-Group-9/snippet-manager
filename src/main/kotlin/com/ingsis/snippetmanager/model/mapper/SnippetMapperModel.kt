@@ -6,7 +6,7 @@ import com.ingsis.snippetmanager.model.de.SnippetDE
 class SnippetMapperModel {
 
     fun convertSnippetBOToDE(snippetBO: SnippetBO): SnippetDE {
-        return SnippetDE(0,snippetBO.getName(), snippetBO.getType(), snippetBO.getContent())
+        return SnippetDE(snippetBO.getName(), snippetBO.getType(), snippetBO.getContent())
     }
 
     fun convertSnippetDEToBO(snippetDE: SnippetDE): SnippetBO {

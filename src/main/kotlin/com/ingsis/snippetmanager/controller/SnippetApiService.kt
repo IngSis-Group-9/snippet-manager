@@ -17,4 +17,15 @@ class SnippetApiService(private val snippetService: SnippetService){
             throw e
         }
     }
+
+    fun updateSnippet(id: Long, tempFile: File): SnippetBO? {
+        try{
+            val content = tempFile.readText()
+            val existingSnippetBO = snippetService.getSnippetById(id)
+            val snippetBOToUpdate = SnippetBO(existingSnippetBO.getName(), existingSnippetBO.getType(), content)
+            return snippetService.updateSnippet(snippetBOToUpdate, id)
+        }catch(e : Exception){
+            throw e
+        }
+    }
 }

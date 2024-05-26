@@ -25,13 +25,30 @@ class SnippetApiController(private val snippetApiService: SnippetApiService) {
             return ResponseEntity.badRequest().body(null)
         }
 
-        // Save the file to a temporary location
         val tempFile = File.createTempFile("snippet-", ".tmp")
         file.transferTo(tempFile)
 
         val snippetBO = snippetApiService.createSnippet(name, type, tempFile)
 
-        // Delete the temporary file
+        Files.deleteIfExists(Paths.get(tempFile.toURI()))
+
+        return ResponseEntity.ok(snippetBO)
+    }
+
+    @PostMapping("/update")
+    fun updateSnippet(
+        @RequestParam("id") id: Long,
+        @RequestParam("file") file: MultipartFile
+    ): ResponseEntity<SnippetBO>{
+        if (file.isEmpty) {
+            return ResponseEntity.badRequest().body(null)
+        }
+
+        val tempFile = File.createTempFile("snippet-", ".tmp")
+        file.transferTo(tempFile)
+
+        val snippetBO = snippetApiService.updateSnippet(id, tempFile)
+
         Files.deleteIfExists(Paths.get(tempFile.toURI()))
 
         return ResponseEntity.ok(snippetBO)

@@ -14,13 +14,12 @@ import java.nio.file.Paths
 @RestController
 @RequestMapping("/snippets")
 class SnippetApiController(private val snippetApiService: SnippetApiService) {
-
     @PostMapping("/upload")
     fun uploadSnippet(
         @RequestParam("name") name: String,
         @RequestParam("type") type: String,
-        @RequestParam("file") file: MultipartFile
-    ): ResponseEntity<SnippetBO>{
+        @RequestParam("file") file: MultipartFile,
+    ): ResponseEntity<SnippetBO> {
         if (file.isEmpty) {
             return ResponseEntity.badRequest().body(null)
         }
@@ -38,8 +37,8 @@ class SnippetApiController(private val snippetApiService: SnippetApiService) {
     @PostMapping("/update")
     fun updateSnippet(
         @RequestParam("id") id: Long,
-        @RequestParam("file") file: MultipartFile
-    ): ResponseEntity<SnippetBO>{
+        @RequestParam("file") file: MultipartFile,
+    ): ResponseEntity<SnippetBO> {
         if (file.isEmpty) {
             return ResponseEntity.badRequest().body(null)
         }

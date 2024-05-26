@@ -26,11 +26,11 @@ jobs:
         ports:
           - 5432:5432
         env:
-          POSTGRES_DB: 'snippet-manager'
-          POSTGRES_USER: 'postgres'
-          POSTGRES_PASSWORD: 'postgres'
+          POSTGRES_DB: snippet_manager
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
         options: >-
-          --health-cmd "pg_isready -U postgres -d snippet-manager"
+          --health-cmd "pg_isready -U postgres"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -51,11 +51,11 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x ./gradlew
 
-    - name: Build with Gradle Wrapper
-      env:
-        POSTGRES_DB: 'snippet-manager'
-        POSTGRES_USER: 'postgres'
-        POSTGRES_PASSWORD: 'postgres'
+    - name: Build with Gradle
       run: ./gradlew build
+      env:
+        POSTGRES_DB: snippet_manager
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
 
    

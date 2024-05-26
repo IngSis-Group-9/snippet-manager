@@ -26,11 +26,11 @@ jobs:
         ports:
           - 5435:5432
         env:
-          POSTGRES_DB: jdbc:postgresql://snippet-manager-db:5432/snippet-manager
+          POSTGRES_DB: snippet-manager
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
         options: >-
-          --health-cmd "pg_isready -U test_user -d test_db"
+          --health-cmd "pg_isready -U postgres -d snippet-manager"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5

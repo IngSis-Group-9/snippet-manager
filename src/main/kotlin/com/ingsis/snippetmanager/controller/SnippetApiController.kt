@@ -3,6 +3,7 @@ package com.ingsis.snippetmanager.controller
 import com.ingsis.snippetmanager.model.bo.SnippetBO
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -23,14 +24,10 @@ class SnippetApiController(private val snippetApiService: SnippetApiService) {
         if (file.isEmpty) {
             return ResponseEntity.badRequest().body(null)
         }
-
         val tempFile = File.createTempFile("snippet-", ".tmp")
         file.transferTo(tempFile)
-
-        val snippetBO = snippetApiService.createSnippet(name, type, tempFile)
-
+        val snippetBO = snippetApiService.createSnippet(name, type, tempFile.readText())
         Files.deleteIfExists(Paths.get(tempFile.toURI()))
-
         return ResponseEntity.ok(snippetBO)
     }
 
@@ -42,14 +39,19 @@ class SnippetApiController(private val snippetApiService: SnippetApiService) {
         if (file.isEmpty) {
             return ResponseEntity.badRequest().body(null)
         }
-
         val tempFile = File.createTempFile("snippet-", ".tmp")
         file.transferTo(tempFile)
-
-        val snippetBO = snippetApiService.updateSnippet(id, tempFile)
-
+        val snippetBO = snippetApiService.updateSnippet(id, tempFile.readText())
         Files.deleteIfExists(Paths.get(tempFile.toURI()))
+        return ResponseEntity.ok(snippetBO)
+    }
 
+    @PostMapping("/create")
+    fun createSnippet(
+        @RequestBody snippetTO: SnippetTO,
+    ): ResponseEntity<SnippetBO> {
+        val snippetBO = SnippetMapperController().convertSnippetTOToBO(snippetTO)
+        snippetApiService.createSnippet(snippetBO.getName(), snippetBO.getType(), snippetBO.getContent())
         return ResponseEntity.ok(snippetBO)
     }
 }

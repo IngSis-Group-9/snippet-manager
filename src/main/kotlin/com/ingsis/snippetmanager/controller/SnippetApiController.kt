@@ -46,12 +46,22 @@ class SnippetApiController(private val snippetApiService: SnippetApiService) {
         return ResponseEntity.ok(snippetBO)
     }
 
-    @PostMapping("/create")
-    fun createSnippet(
-        @RequestBody snippetTO: SnippetTO,
+    @PostMapping("/uploadFromEditor")
+    fun uploadFromEditor(
+        @RequestParam("name") name: String,
+        @RequestParam("type") type: String,
+        @RequestBody content: String,
     ): ResponseEntity<SnippetBO> {
-        val snippetBO = SnippetMapperController().convertSnippetTOToBO(snippetTO)
-        snippetApiService.createSnippet(snippetBO.getName(), snippetBO.getType(), snippetBO.getContent())
+        val snippetBO = snippetApiService.createSnippet(name, type, content)
+        return ResponseEntity.ok(snippetBO)
+    }
+
+    @PostMapping("/updateFromEditor")
+    fun updateFromEditor(
+        @RequestParam("id") id: Long,
+        @RequestBody content: String,
+    ): ResponseEntity<SnippetBO> {
+        val snippetBO = snippetApiService.updateSnippet(id, content)
         return ResponseEntity.ok(snippetBO)
     }
 }

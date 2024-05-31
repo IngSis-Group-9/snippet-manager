@@ -5,10 +5,12 @@ import com.ingsis.snippetmanager.model.de.SnippetDE
 
 class SnippetMapperModel {
     fun convertSnippetBOToDE(snippetBO: SnippetBO): SnippetDE {
-        return SnippetDE(snippetBO.getName(), snippetBO.getType(), snippetBO.getContent())
+        val ownerDE = UserMapperModel().convertUserBOToDE(snippetBO.getOwner())
+        return SnippetDE(snippetBO.getName(), snippetBO.getType(), snippetBO.getContent(), ownerDE)
     }
 
     fun convertSnippetDEToBO(snippetDE: SnippetDE): SnippetBO {
-        return SnippetBO(snippetDE.getName(), snippetDE.getType(), snippetDE.getContent())
+        val ownerBO = UserMapperModel().convertUserDEToBo(snippetDE.getOwner())
+        return SnippetBO(snippetDE.getName(), snippetDE.getType(), snippetDE.getContent(), ownerBO)
     }
 }

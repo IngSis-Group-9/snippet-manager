@@ -5,6 +5,8 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 
 @Entity
@@ -16,14 +18,17 @@ data class SnippetDE(
     private val type: String,
     @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     private var content: String,
+    @ManyToOne
+    @JoinColumn(name = "owner_id", nullable = false)
+    private val owner: UserDE,
 ) {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private val id: Long = 0
+    private val snippetId: Long = 0
 
     fun getId(): Long {
-        return id
+        return snippetId
     }
 
     fun getName(): String {
@@ -40,5 +45,9 @@ data class SnippetDE(
 
     fun setContent(content: String) {
         this.content = content
+    }
+
+    fun getOwner(): UserDE {
+        return owner
     }
 }

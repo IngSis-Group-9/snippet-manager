@@ -1,5 +1,6 @@
-package com.ingsis.snippetmanager.controller
+package com.ingsis.snippetmanager.controller.snippet
 
+import com.ingsis.snippetmanager.controller.user.UserTO
 import com.ingsis.snippetmanager.model.bo.SnippetBO
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -20,13 +21,14 @@ class SnippetApiController(private val snippetApiService: SnippetApiService) {
         @RequestParam("name") name: String,
         @RequestParam("type") type: String,
         @RequestParam("file") file: MultipartFile,
+        @RequestParam("owner") owner: UserTO,
     ): ResponseEntity<SnippetBO> {
         if (file.isEmpty) {
             return ResponseEntity.badRequest().body(null)
         }
         val tempFile = File.createTempFile("snippet-", ".tmp")
         file.transferTo(tempFile)
-        val snippetBO = snippetApiService.createSnippet(name, type, tempFile.readText())
+        val snippetBO = snippetApiService.createSnippet(name, type, tempFile.readText(), owner)
         Files.deleteIfExists(Paths.get(tempFile.toURI()))
         return ResponseEntity.ok(snippetBO)
     }
@@ -35,13 +37,14 @@ class SnippetApiController(private val snippetApiService: SnippetApiService) {
     fun updateSnippet(
         @RequestParam("id") id: Long,
         @RequestParam("file") file: MultipartFile,
+        @RequestParam("owner") owner: UserTO,
     ): ResponseEntity<SnippetBO> {
         if (file.isEmpty) {
             return ResponseEntity.badRequest().body(null)
         }
         val tempFile = File.createTempFile("snippet-", ".tmp")
         file.transferTo(tempFile)
-        val snippetBO = snippetApiService.updateSnippet(id, tempFile.readText())
+        val snippetBO = snippetApiService.updateSnippet(id, tempFile.readText(), owner)
         Files.deleteIfExists(Paths.get(tempFile.toURI()))
         return ResponseEntity.ok(snippetBO)
     }
@@ -51,8 +54,9 @@ class SnippetApiController(private val snippetApiService: SnippetApiService) {
         @RequestParam("name") name: String,
         @RequestParam("type") type: String,
         @RequestBody content: String,
+        @RequestParam("owner") owner: UserTO,
     ): ResponseEntity<SnippetBO> {
-        val snippetBO = snippetApiService.createSnippet(name, type, content)
+        val snippetBO = snippetApiService.createSnippet(name, type, content, owner)
         return ResponseEntity.ok(snippetBO)
     }
 
@@ -60,8 +64,9 @@ class SnippetApiController(private val snippetApiService: SnippetApiService) {
     fun updateFromEditor(
         @RequestParam("id") id: Long,
         @RequestBody content: String,
+        @RequestParam("owner") owner: UserTO,
     ): ResponseEntity<SnippetBO> {
-        val snippetBO = snippetApiService.updateSnippet(id, content)
+        val snippetBO = snippetApiService.updateSnippet(id, content, owner)
         return ResponseEntity.ok(snippetBO)
     }
 }

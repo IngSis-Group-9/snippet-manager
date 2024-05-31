@@ -1,5 +1,6 @@
-package com.ingsis.snippetmanager.controller
+package com.ingsis.snippetmanager.controller.snippet
 
+import com.ingsis.snippetmanager.controller.user.UserTO
 import org.jetbrains.annotations.NotNull
 
 class SnippetTO(
@@ -9,6 +10,8 @@ class SnippetTO(
     private val type: String,
     @NotNull
     private val content: String,
+    @NotNull
+    private val owner: UserTO,
 ) {
     fun getName(): String {
         return name
@@ -20,5 +23,9 @@ class SnippetTO(
 
     fun getContent(): String {
         return content
+    }
+
+    fun getOwner(): UserTO {
+        return owner
     }
 }

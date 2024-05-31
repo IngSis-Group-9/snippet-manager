@@ -4,6 +4,7 @@ data class SnippetBO(
     private val name: String,
     private val type: String,
     private val content: String,
+    private val owner: UserBO,
 ) {
     fun getName(): String {
         return name
@@ -15,5 +16,9 @@ data class SnippetBO(
 
     fun getContent(): String {
         return content
+    }
+
+    fun getOwner(): UserBO {
+        return owner
     }
 }

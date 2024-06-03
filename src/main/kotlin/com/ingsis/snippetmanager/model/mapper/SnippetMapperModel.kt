@@ -5,10 +5,10 @@ import com.ingsis.snippetmanager.model.de.SnippetDE
 
 class SnippetMapperModel {
     fun convertSnippetBOToDE(snippetBO: SnippetBO): SnippetDE {
-        return SnippetDE(snippetBO.getName(), snippetBO.getType(), snippetBO.getContent())
+        return SnippetDE(snippetBO.getName(), snippetBO.getContent(), snippetBO.getLanguage(), snippetBO.getExtension())
     }
 
     fun convertSnippetDEToBO(snippetDE: SnippetDE): SnippetBO {
-        return SnippetBO(snippetDE.getName(), snippetDE.getType(), snippetDE.getContent())
+        return SnippetBO(snippetDE.getName(), snippetDE.getContent(), snippetDE.getLanguage(), snippetDE.getExtension())
     }
 }

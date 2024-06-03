@@ -8,11 +8,12 @@ import org.springframework.stereotype.Service
 class SnippetApiService(private val snippetService: SnippetService) {
     fun createSnippet(
         name: String,
-        type: String,
         content: String,
+        language: String,
+        extension: String
     ): SnippetBO {
         try {
-            val snippetBOToSave = SnippetBO(name, type, content)
+            val snippetBOToSave = SnippetBO(name, content, language, extension)
             return snippetService.saveSnippet(snippetBOToSave)
         } catch (e: Exception) {
             throw e
@@ -25,7 +26,7 @@ class SnippetApiService(private val snippetService: SnippetService) {
     ): SnippetBO? {
         try {
             val existingSnippetBO = snippetService.getSnippetById(id)
-            val snippetBOToUpdate = SnippetBO(existingSnippetBO.getName(), existingSnippetBO.getType(), content)
+            val snippetBOToUpdate = SnippetBO(existingSnippetBO.getName(), content, existingSnippetBO.getLanguage(), existingSnippetBO.getExtension())
             return snippetService.updateSnippet(snippetBOToUpdate, id)
         } catch (e: Exception) {
             throw e

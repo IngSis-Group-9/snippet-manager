@@ -12,10 +12,12 @@ import jakarta.persistence.Table
 data class SnippetDE(
     @Column(name = "name", nullable = false)
     private val name: String,
-    @Column(name = "type", nullable = false)
-    private val type: String,
     @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     private var content: String,
+    @Column(name = "language", nullable = false)
+    private val language: String,
+    @Column(name = "extension", nullable = false)
+    private val extension: String,
 ) {
     @Id
     @Column(name = "id")
@@ -30,12 +32,16 @@ data class SnippetDE(
         return name
     }
 
-    fun getType(): String {
-        return type
-    }
-
     fun getContent(): String {
         return content
+    }
+
+    fun getLanguage(): String {
+        return language
+    }
+
+    fun getExtension(): String {
+        return extension
     }
 
     fun setContent(content: String) {

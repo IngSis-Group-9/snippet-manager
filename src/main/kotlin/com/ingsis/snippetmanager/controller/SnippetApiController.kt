@@ -2,6 +2,7 @@ package com.ingsis.snippetmanager.controller
 
 import com.ingsis.snippetmanager.model.bo.SnippetBO
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -12,21 +13,23 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/snippets")
 class SnippetApiController(private val snippetApiService: SnippetApiService) {
     @PostMapping("/upload")
     fun uploadSnippet(
         @RequestParam("name") name: String,
-        @RequestParam("type") type: String,
         @RequestParam("file") file: MultipartFile,
+        @RequestParam("language") language: String,
+        @RequestParam("extension") extension: String
     ): ResponseEntity<SnippetBO> {
         if (file.isEmpty) {
             return ResponseEntity.badRequest().body(null)
         }
         val tempFile = File.createTempFile("snippet-", ".tmp")
         file.transferTo(tempFile)
-        val snippetBO = snippetApiService.createSnippet(name, type, tempFile.readText())
+        val snippetBO = snippetApiService.createSnippet(name, tempFile.readText(), language, extension)
         Files.deleteIfExists(Paths.get(tempFile.toURI()))
         return ResponseEntity.ok(snippetBO)
     }
@@ -51,7 +54,7 @@ class SnippetApiController(private val snippetApiService: SnippetApiService) {
         @RequestBody snippetTO: SnippetTO,
     ): ResponseEntity<SnippetBO> {
         val snippetBO = SnippetMapperController().convertSnippetTOToBO(snippetTO)
-        snippetApiService.createSnippet(snippetBO.getName(), snippetBO.getType(), snippetBO.getContent())
+        snippetApiService.createSnippet(snippetBO.getName(), snippetBO.getContent(), snippetBO.getLanguage(), snippetBO.getExtension())
         return ResponseEntity.ok(snippetBO)
     }
 }

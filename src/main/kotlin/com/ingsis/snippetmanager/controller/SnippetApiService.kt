@@ -10,7 +10,7 @@ class SnippetApiService(private val snippetService: SnippetService) {
         name: String,
         content: String,
         language: String,
-        extension: String
+        extension: String,
     ): SnippetBO {
         try {
             val snippetBOToSave = SnippetBO(name, content, language, extension)
@@ -26,8 +26,17 @@ class SnippetApiService(private val snippetService: SnippetService) {
     ): SnippetBO? {
         try {
             val existingSnippetBO = snippetService.getSnippetById(id)
-            val snippetBOToUpdate = SnippetBO(existingSnippetBO.getName(), content, existingSnippetBO.getLanguage(), existingSnippetBO.getExtension())
+            val snippetBOToUpdate =
+                SnippetBO(existingSnippetBO.getName(), content, existingSnippetBO.getLanguage(), existingSnippetBO.getExtension())
             return snippetService.updateSnippet(snippetBOToUpdate, id)
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    fun getAllSnippets(): List<SnippetBO>? {
+        try {
+            return snippetService.getAllSnippets()
         } catch (e: Exception) {
             throw e
         }

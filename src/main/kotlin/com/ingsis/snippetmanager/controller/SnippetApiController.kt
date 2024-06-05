@@ -3,6 +3,7 @@ package com.ingsis.snippetmanager.controller
 import com.ingsis.snippetmanager.model.bo.SnippetBO
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -22,7 +23,7 @@ class SnippetApiController(private val snippetApiService: SnippetApiService) {
         @RequestParam("name") name: String,
         @RequestParam("file") file: MultipartFile,
         @RequestParam("language") language: String,
-        @RequestParam("extension") extension: String
+        @RequestParam("extension") extension: String,
     ): ResponseEntity<SnippetBO> {
         if (file.isEmpty) {
             return ResponseEntity.badRequest().body(null)
@@ -56,5 +57,10 @@ class SnippetApiController(private val snippetApiService: SnippetApiService) {
         val snippetBO = SnippetMapperController().convertSnippetTOToBO(snippetTO)
         snippetApiService.createSnippet(snippetBO.getName(), snippetBO.getContent(), snippetBO.getLanguage(), snippetBO.getExtension())
         return ResponseEntity.ok(snippetBO)
+    }
+
+    @GetMapping("/getAll")
+    fun getAllSnippets(): ResponseEntity<List<SnippetBO>> {
+        return ResponseEntity.ok(snippetApiService.getAllSnippets())
     }
 }

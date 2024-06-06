@@ -18,22 +18,6 @@ import java.nio.file.Paths
 @RestController
 @RequestMapping("/snippets")
 class SnippetApiController(private val snippetApiService: SnippetApiService) {
-    @PostMapping("/upload")
-    fun uploadSnippet(
-        @RequestParam("name") name: String,
-        @RequestParam("file") file: MultipartFile,
-        @RequestParam("language") language: String,
-        @RequestParam("extension") extension: String,
-    ): ResponseEntity<SnippetBO> {
-        if (file.isEmpty) {
-            return ResponseEntity.badRequest().body(null)
-        }
-        val tempFile = File.createTempFile("snippet-", ".tmp")
-        file.transferTo(tempFile)
-        val snippetBO = snippetApiService.createSnippet(name, tempFile.readText(), language, extension)
-        Files.deleteIfExists(Paths.get(tempFile.toURI()))
-        return ResponseEntity.ok(snippetBO)
-    }
 
     @PostMapping("/update")
     fun updateSnippet(

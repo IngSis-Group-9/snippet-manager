@@ -1,39 +1,15 @@
 package com.ingsis.snippetmanager.controller
 
 import com.ingsis.snippetmanager.model.bo.SnippetBO
+import com.ingsis.snippetmanager.model.bo.UpdateSnippet
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.CrossOrigin
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.multipart.MultipartFile
-import org.springframework.web.bind.annotation.PathVariable
-import java.io.File
-import java.nio.file.Files
-import java.nio.file.Paths
+import org.springframework.web.bind.annotation.*
 
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/snippets")
 class SnippetApiController(private val snippetApiService: SnippetApiService) {
 
-    @PostMapping("/update")
-    fun updateSnippet(
-        @RequestParam("id") id: Long,
-        @RequestParam("file") file: MultipartFile,
-    ): ResponseEntity<SnippetBO> {
-        if (file.isEmpty) {
-            return ResponseEntity.badRequest().body(null)
-        }
-        val tempFile = File.createTempFile("snippet-", ".tmp")
-        file.transferTo(tempFile)
-        val snippetBO = snippetApiService.updateSnippet(id, tempFile.readText())
-        Files.deleteIfExists(Paths.get(tempFile.toURI()))
-        return ResponseEntity.ok(snippetBO)
-    }
 
     @PostMapping("/create")
     fun createSnippet(
@@ -54,6 +30,16 @@ class SnippetApiController(private val snippetApiService: SnippetApiService) {
         val snippetBO = snippetApiService.getSnippetById(id)
         return if (snippetBO != null) {
             ResponseEntity.ok(snippetBO)
+        } else {
+            ResponseEntity.notFound().build()
+        }
+    }
+
+    @PutMapping("/{id}")
+    fun updateSnippetById(@PathVariable id: Long, @RequestBody updateSnippet: UpdateSnippet): ResponseEntity<SnippetBO> {
+        val updatedSnippetBO = snippetApiService.updateSnippet(id, updateSnippet.content)
+        return if (updatedSnippetBO != null) {
+            ResponseEntity.ok(updatedSnippetBO)
         } else {
             ResponseEntity.notFound().build()
         }

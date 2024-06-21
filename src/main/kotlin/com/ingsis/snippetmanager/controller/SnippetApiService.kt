@@ -42,4 +42,12 @@ class SnippetApiService(private val snippetService: SnippetService) {
             throw e
         }
     }
+
+    fun getSnippetById(id: Long): SnippetBO? {
+        try {
+            return snippetService.getSnippetById(id)
+        } catch (e: Exception) {
+            throw e
+        }
+    }
 }

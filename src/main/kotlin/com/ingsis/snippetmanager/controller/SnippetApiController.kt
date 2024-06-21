@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.bind.annotation.PathVariable
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -46,5 +47,15 @@ class SnippetApiController(private val snippetApiService: SnippetApiService) {
     @GetMapping("/getAll")
     fun getAllSnippets(): ResponseEntity<List<SnippetBO>> {
         return ResponseEntity.ok(snippetApiService.getAllSnippets())
+    }
+
+    @GetMapping("/{id}")
+    fun getSnippetById(@PathVariable id: Long): ResponseEntity<SnippetBO> {
+        val snippetBO = snippetApiService.getSnippetById(id)
+        return if (snippetBO != null) {
+            ResponseEntity.ok(snippetBO)
+        } else {
+            ResponseEntity.notFound().build()
+        }
     }
 }

@@ -4,6 +4,8 @@ import org.jetbrains.annotations.NotNull
 
 class SnippetTO(
     @NotNull
+    private val id: Long,
+    @NotNull
     private val name: String,
     @NotNull
     private val content: String,
@@ -12,6 +14,10 @@ class SnippetTO(
     @NotNull
     private val extension: String
 ) {
+    fun getId(): Long {
+        return id
+    }
+
     fun getName(): String {
         return name
     }

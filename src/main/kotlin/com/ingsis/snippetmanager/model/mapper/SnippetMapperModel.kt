@@ -9,6 +9,6 @@ class SnippetMapperModel {
     }
 
     fun convertSnippetDEToBO(snippetDE: SnippetDE): SnippetBO {
-        return SnippetBO(snippetDE.getName(), snippetDE.getContent(), snippetDE.getLanguage(), snippetDE.getExtension())
+        return SnippetBO(snippetDE.getId(), snippetDE.getName(), snippetDE.getContent(), snippetDE.getLanguage(), snippetDE.getExtension())
     }
 }

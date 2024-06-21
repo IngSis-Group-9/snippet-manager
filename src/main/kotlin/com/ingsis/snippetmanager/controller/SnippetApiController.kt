@@ -39,7 +39,7 @@ class SnippetApiController(private val snippetApiService: SnippetApiService) {
         @RequestBody snippetTO: SnippetTO,
     ): ResponseEntity<SnippetBO> {
         val snippetBO = SnippetMapperController().convertSnippetTOToBO(snippetTO)
-        snippetApiService.createSnippet(snippetBO.getName(), snippetBO.getContent(), snippetBO.getLanguage(), snippetBO.getExtension())
+        snippetApiService.createSnippet(snippetBO.getId(), snippetBO.getName(), snippetBO.getContent(), snippetBO.getLanguage(), snippetBO.getExtension())
         return ResponseEntity.ok(snippetBO)
     }
 

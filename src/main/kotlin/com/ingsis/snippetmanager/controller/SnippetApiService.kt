@@ -1,6 +1,7 @@
 package com.ingsis.snippetmanager.controller
 
 import com.ingsis.snippetmanager.model.bo.SnippetBO
+import com.ingsis.snippetmanager.model.de.User
 import com.ingsis.snippetmanager.service.SnippetService
 import org.springframework.stereotype.Service
 
@@ -12,9 +13,10 @@ class SnippetApiService(private val snippetService: SnippetService) {
         content: String,
         language: String,
         extension: String,
+        owner: User,
     ): SnippetBO {
         try {
-            val snippetBOToSave = SnippetBO(id, name, content, language, extension)
+            val snippetBOToSave = SnippetBO(id, name, content, language, extension, owner)
             return snippetService.saveSnippet(snippetBOToSave)
         } catch (e: Exception) {
             throw e
@@ -28,16 +30,18 @@ class SnippetApiService(private val snippetService: SnippetService) {
         try {
             val existingSnippetBO = snippetService.getSnippetById(id)
             val snippetBOToUpdate =
-                SnippetBO(existingSnippetBO.getId(), existingSnippetBO.getName(), content, existingSnippetBO.getLanguage(), existingSnippetBO.getExtension())
+                SnippetBO(existingSnippetBO.getId(), existingSnippetBO.getName(), content, existingSnippetBO.getLanguage(), existingSnippetBO.getExtension(), existingSnippetBO.getOwner())
             return snippetService.updateSnippet(snippetBOToUpdate, id)
         } catch (e: Exception) {
             throw e
         }
     }
 
-    fun getAllSnippets(): List<SnippetBO>? {
+    fun getAllSnippetsByUser(userId: String): List<SnippetBO>? {
         try {
-            return snippetService.getAllSnippets()
+            // los id empiezan con google-oauth2| y luego el id en si, quiero sacarle la primer parte
+
+            return snippetService.getAllSnippetsByUser(userId)
         } catch (e: Exception) {
             throw e
         }

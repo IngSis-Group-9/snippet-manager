@@ -2,7 +2,7 @@ package com.ingsis.snippetmanager.controller
 
 import org.jetbrains.annotations.NotNull
 
-class SnippetTO(
+class CreateSnippet(
     @NotNull
     private val id: Long,
     @NotNull
@@ -12,7 +12,9 @@ class SnippetTO(
     @NotNull
     private val language: String,
     @NotNull
-    private val extension: String
+    private val extension: String,
+    @NotNull
+    private val ownerId: String,
 ) {
     fun getId(): Long {
         return id
@@ -32,5 +34,9 @@ class SnippetTO(
 
     fun getExtension(): String {
         return extension
+    }
+
+    fun getOwnerId(): String {
+        return ownerId
     }
 }

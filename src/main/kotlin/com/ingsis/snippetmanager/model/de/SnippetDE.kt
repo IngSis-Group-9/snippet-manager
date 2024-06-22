@@ -6,6 +6,10 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.ManyToMany
+import jakarta.persistence.JoinTable
 
 @Entity
 @Table(name = "snippets")
@@ -18,6 +22,16 @@ data class SnippetDE(
     private val language: String,
     @Column(name = "extension", nullable = false)
     private val extension: String,
+    @ManyToOne
+    @JoinColumn(name = "owner_id", nullable = false)
+    private val owner: User,
+    @ManyToMany
+    @JoinTable(
+        name = "snippet_shared_with",
+        joinColumns = [JoinColumn(name = "snippet_id")],
+        inverseJoinColumns = [JoinColumn(name = "user_id")]
+    )
+    private val sharedWith: Set<User> = HashSet()
 ) {
     @Id
     @Column(name = "id")
@@ -46,5 +60,13 @@ data class SnippetDE(
 
     fun setContent(content: String) {
         this.content = content
+    }
+
+    fun getOwner(): User {
+        return owner
+    }
+
+    fun getSharedWith(): Set<User> {
+        return sharedWith
     }
 }

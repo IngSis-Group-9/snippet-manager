@@ -30,7 +30,14 @@ class SnippetApiService(private val snippetService: SnippetService) {
         try {
             val existingSnippetBO = snippetService.getSnippetById(id)
             val snippetBOToUpdate =
-                SnippetBO(existingSnippetBO.getId(), existingSnippetBO.getName(), content, existingSnippetBO.getLanguage(), existingSnippetBO.getExtension(), existingSnippetBO.getOwner())
+                SnippetBO(
+                    existingSnippetBO.getId(),
+                    existingSnippetBO.getName(),
+                    content,
+                    existingSnippetBO.getLanguage(),
+                    existingSnippetBO.getExtension(),
+                    existingSnippetBO.getOwner(),
+                )
             return snippetService.updateSnippet(snippetBOToUpdate, id)
         } catch (e: Exception) {
             throw e

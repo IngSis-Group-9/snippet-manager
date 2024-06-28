@@ -1,5 +1,6 @@
 package com.ingsis.snippetmanager.controller
 
+import com.ingsis.snippetmanager.model.ComplianceEnum
 import com.ingsis.snippetmanager.model.bo.SnippetBO
 import com.ingsis.snippetmanager.service.UserService
 
@@ -13,6 +14,7 @@ class SnippetMapperController(private val userService: UserService) {
             createSnippet.getLanguage(),
             createSnippet.getExtension(),
             user,
+            ComplianceEnum.PENDING,
         )
     }
 

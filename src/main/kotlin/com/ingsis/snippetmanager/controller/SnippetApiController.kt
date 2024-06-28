@@ -30,6 +30,7 @@ class SnippetApiController(private val snippetApiService: SnippetApiService, pri
             snippetBO.getLanguage(),
             snippetBO.getExtension(),
             snippetBO.getOwner(),
+            snippetBO.getCompliance(),
         )
         return ResponseEntity.ok(snippetBO)
     }

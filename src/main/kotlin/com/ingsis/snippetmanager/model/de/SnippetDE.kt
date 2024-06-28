@@ -1,5 +1,6 @@
 package com.ingsis.snippetmanager.model.de
 
+import com.ingsis.snippetmanager.model.ComplianceEnum
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -25,6 +26,8 @@ data class SnippetDE(
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
     private val owner: User,
+    @Column(name = "compliance", nullable = false)
+    private val compliance: ComplianceEnum,
     @ManyToMany
     @JoinTable(
         name = "snippet_shared_with",
@@ -64,6 +67,10 @@ data class SnippetDE(
 
     fun getOwner(): User {
         return owner
+    }
+
+    fun getCompliance(): ComplianceEnum {
+        return compliance
     }
 
     fun getSharedWith(): Set<User> {

@@ -11,6 +11,7 @@ class SnippetMapperModel {
             snippetBO.getLanguage(),
             snippetBO.getExtension(),
             snippetBO.getOwner(),
+            snippetBO.getCompliance(),
         )
     }
 
@@ -22,6 +23,7 @@ class SnippetMapperModel {
             snippetDE.getLanguage(),
             snippetDE.getExtension(),
             snippetDE.getOwner(),
+            snippetDE.getCompliance(),
         )
     }
 }

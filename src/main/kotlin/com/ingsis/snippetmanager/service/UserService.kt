@@ -31,4 +31,11 @@ class UserService(private val userRepository: UserRepository) {
     fun createUser(user: User): Optional<User> {
         return Optional.of(userRepository.save(user))
     }
+
+    fun findFriends(
+        name: String,
+        userId: String,
+    ): List<User>? {
+        return userRepository.findByName(name, userId)
+    }
 }

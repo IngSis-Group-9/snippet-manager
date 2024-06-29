@@ -1,57 +1,96 @@
 package com.ingsis.snippetmanager.controller
 
+import com.ingsis.snippetmanager.model.bo.ShareSnippetRequest
 import com.ingsis.snippetmanager.model.bo.SnippetBO
+import com.ingsis.snippetmanager.model.bo.UpdateSnippetRequest
+import com.ingsis.snippetmanager.service.UserService
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.multipart.MultipartFile
-import java.io.File
-import java.nio.file.Files
-import java.nio.file.Paths
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/snippets")
-class SnippetApiController(private val snippetApiService: SnippetApiService) {
-    @PostMapping("/upload")
-    fun uploadSnippet(
-        @RequestParam("name") name: String,
-        @RequestParam("type") type: String,
-        @RequestParam("file") file: MultipartFile,
-    ): ResponseEntity<SnippetBO> {
-        if (file.isEmpty) {
-            return ResponseEntity.badRequest().body(null)
-        }
-        val tempFile = File.createTempFile("snippet-", ".tmp")
-        file.transferTo(tempFile)
-        val snippetBO = snippetApiService.createSnippet(name, type, tempFile.readText())
-        Files.deleteIfExists(Paths.get(tempFile.toURI()))
-        return ResponseEntity.ok(snippetBO)
-    }
-
-    @PostMapping("/update")
-    fun updateSnippet(
-        @RequestParam("id") id: Long,
-        @RequestParam("file") file: MultipartFile,
-    ): ResponseEntity<SnippetBO> {
-        if (file.isEmpty) {
-            return ResponseEntity.badRequest().body(null)
-        }
-        val tempFile = File.createTempFile("snippet-", ".tmp")
-        file.transferTo(tempFile)
-        val snippetBO = snippetApiService.updateSnippet(id, tempFile.readText())
-        Files.deleteIfExists(Paths.get(tempFile.toURI()))
-        return ResponseEntity.ok(snippetBO)
-    }
-
+class SnippetApiController(private val snippetApiService: SnippetApiService, private val userService: UserService) {
     @PostMapping("/create")
     fun createSnippet(
-        @RequestBody snippetTO: SnippetTO,
+        @RequestBody request: CreateSnippetRequest,
     ): ResponseEntity<SnippetBO> {
-        val snippetBO = SnippetMapperController().convertSnippetTOToBO(snippetTO)
-        snippetApiService.createSnippet(snippetBO.getName(), snippetBO.getType(), snippetBO.getContent())
+        val snippetBO = SnippetMapperController(userService).convertSnippetTOToBO(request)
+        snippetApiService.createSnippet(
+            snippetBO.getId(),
+            snippetBO.getName(),
+            snippetBO.getContent(),
+            snippetBO.getLanguage(),
+            snippetBO.getExtension(),
+            snippetBO.getOwner(),
+            snippetBO.getCompliance(),
+        )
         return ResponseEntity.ok(snippetBO)
+    }
+
+    @GetMapping("/getAll")
+    fun getAllSnippets(
+        @RequestParam userId: String,
+    ): ResponseEntity<List<SnippetBO>> {
+        val user = userService.findUserById(userId)
+        if (user.isEmpty) {
+            return ResponseEntity.notFound().build()
+        }
+        return ResponseEntity.ok(snippetApiService.getAllSnippetsByUser(user.get()))
+    }
+
+    @GetMapping("/{id}")
+    fun getSnippetById(
+        @PathVariable id: Long,
+    ): ResponseEntity<SnippetBO> {
+        val snippetBO = snippetApiService.getSnippetById(id)
+        return if (snippetBO != null) {
+            ResponseEntity.ok(snippetBO)
+        } else {
+            ResponseEntity.notFound().build()
+        }
+    }
+
+    @PutMapping("/{id}")
+    fun updateSnippetById(
+        @PathVariable id: Long,
+        @RequestBody request: UpdateSnippetRequest,
+    ): ResponseEntity<SnippetBO> {
+        val updatedSnippetBO = snippetApiService.updateSnippet(id, request.content)
+        return if (updatedSnippetBO != null) {
+            ResponseEntity.ok(updatedSnippetBO)
+        } else {
+            ResponseEntity.notFound().build()
+        }
+    }
+
+    @PostMapping("/{snippetId}/share")
+    fun shareSnippet(
+        @PathVariable snippetId: Long,
+        @RequestBody request: ShareSnippetRequest,
+    ): ResponseEntity<SnippetBO> {
+        val friend = userService.findUserById(request.userId)
+        if (friend.isEmpty) {
+            return ResponseEntity.notFound().build()
+        }
+        val sharedSnippet = snippetApiService.shareSnippet(snippetId, friend.get())
+        return ResponseEntity.ok(sharedSnippet)
+    }
+
+    @DeleteMapping("/{id}")
+    fun deleteSnippet(
+        @PathVariable id: Long,
+    ): ResponseEntity<String> {
+        snippetApiService.deleteSnippetById(id)
+        return ResponseEntity.ok("Snippet deleted successfully")
     }
 }

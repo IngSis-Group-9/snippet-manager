@@ -1,16 +1,20 @@
-package com.ingsis.snippetmanager.model.bo
+package com.ingsis.snippetmanager.controller
 
-import com.ingsis.snippetmanager.model.ComplianceEnum
-import com.ingsis.snippetmanager.model.de.User
+import org.jetbrains.annotations.NotNull
 
-data class SnippetBO(
+class CreateSnippetRequest(
+    @NotNull
     private val id: Long,
+    @NotNull
     private val name: String,
+    @NotNull
     private val content: String,
+    @NotNull
     private val language: String,
+    @NotNull
     private val extension: String,
-    private val owner: User,
-    private val compliance: ComplianceEnum,
+    @NotNull
+    private val ownerId: String,
 ) {
     fun getId(): Long {
         return id
@@ -32,11 +36,7 @@ data class SnippetBO(
         return extension
     }
 
-    fun getOwner(): User {
-        return owner
-    }
-
-    fun getCompliance(): ComplianceEnum {
-        return compliance
+    fun getOwnerId(): String {
+        return ownerId
     }
 }

@@ -34,7 +34,7 @@ data class SnippetDE(
         joinColumns = [JoinColumn(name = "snippet_id")],
         inverseJoinColumns = [JoinColumn(name = "user_id")],
     )
-    private val sharedWith: Set<User> = HashSet(),
+    private val sharedWith: MutableSet<User> = HashSet(),
 ) {
     @Id
     @Column(name = "id")
@@ -75,5 +75,9 @@ data class SnippetDE(
 
     fun getSharedWith(): Set<User> {
         return sharedWith
+    }
+
+    fun addSharedWith(user: User) {
+        sharedWith.add(user)
     }
 }

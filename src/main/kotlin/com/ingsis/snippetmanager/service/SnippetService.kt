@@ -1,6 +1,7 @@
 package com.ingsis.snippetmanager.service
 
 import com.ingsis.snippetmanager.model.bo.SnippetBO
+import com.ingsis.snippetmanager.model.de.User
 import com.ingsis.snippetmanager.model.mapper.SnippetMapperModel
 import com.ingsis.snippetmanager.repository.SnippetRepository
 import org.springframework.stereotype.Service
@@ -38,5 +39,15 @@ class SnippetService(private val snippetRepository: SnippetRepository) {
         existingSnippetDE.setContent(snippetBO.getContent())
 
         return SnippetMapperModel().convertSnippetDEToBO(snippetRepository.save(existingSnippetDE))
+    }
+
+    fun shareSnippet(
+        snippetId: Long,
+        friend: User,
+    ): SnippetBO? {
+        val snippetDE = snippetRepository.findById(snippetId).orElseThrow { Exception("Snippet not found") }
+        snippetDE.addSharedWith(friend)
+        val updatedSnippetDE = snippetRepository.save(snippetDE)
+        return SnippetMapperModel().convertSnippetDEToBO(updatedSnippetDE)
     }
 }

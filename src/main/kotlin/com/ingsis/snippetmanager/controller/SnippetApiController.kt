@@ -1,7 +1,8 @@
 package com.ingsis.snippetmanager.controller
 
+import com.ingsis.snippetmanager.model.bo.ShareSnippetRequest
 import com.ingsis.snippetmanager.model.bo.SnippetBO
-import com.ingsis.snippetmanager.model.bo.UpdateSnippet
+import com.ingsis.snippetmanager.model.bo.UpdateSnippetRequest
 import com.ingsis.snippetmanager.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
@@ -20,9 +21,9 @@ import org.springframework.web.bind.annotation.RestController
 class SnippetApiController(private val snippetApiService: SnippetApiService, private val userService: UserService) {
     @PostMapping("/create")
     fun createSnippet(
-        @RequestBody createSnippet: CreateSnippet,
+        @RequestBody request: CreateSnippetRequest,
     ): ResponseEntity<SnippetBO> {
-        val snippetBO = SnippetMapperController(userService).convertSnippetTOToBO(createSnippet)
+        val snippetBO = SnippetMapperController(userService).convertSnippetTOToBO(request)
         snippetApiService.createSnippet(
             snippetBO.getId(),
             snippetBO.getName(),
@@ -57,13 +58,26 @@ class SnippetApiController(private val snippetApiService: SnippetApiService, pri
     @PutMapping("/{id}")
     fun updateSnippetById(
         @PathVariable id: Long,
-        @RequestBody updateSnippet: UpdateSnippet,
+        @RequestBody request: UpdateSnippetRequest,
     ): ResponseEntity<SnippetBO> {
-        val updatedSnippetBO = snippetApiService.updateSnippet(id, updateSnippet.content)
+        val updatedSnippetBO = snippetApiService.updateSnippet(id, request.content)
         return if (updatedSnippetBO != null) {
             ResponseEntity.ok(updatedSnippetBO)
         } else {
             ResponseEntity.notFound().build()
         }
+    }
+
+    @PostMapping("/{snippetId}/share")
+    fun shareSnippet(
+        @PathVariable snippetId: Long,
+        @RequestBody request: ShareSnippetRequest,
+    ): ResponseEntity<SnippetBO> {
+        val friend = userService.findUserById(request.userId)
+        if (friend.isEmpty) {
+            return ResponseEntity.notFound().build()
+        }
+        val sharedSnippet = snippetApiService.shareSnippet(snippetId, friend.get())
+        return ResponseEntity.ok(sharedSnippet)
     }
 }

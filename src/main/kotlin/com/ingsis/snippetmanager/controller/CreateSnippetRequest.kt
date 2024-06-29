@@ -2,7 +2,7 @@ package com.ingsis.snippetmanager.controller
 
 import org.jetbrains.annotations.NotNull
 
-class CreateSnippet(
+class CreateSnippetRequest(
     @NotNull
     private val id: Long,
     @NotNull

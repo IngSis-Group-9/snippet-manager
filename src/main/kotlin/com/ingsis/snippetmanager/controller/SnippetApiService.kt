@@ -64,4 +64,15 @@ class SnippetApiService(private val snippetService: SnippetService) {
             throw e
         }
     }
+
+    fun shareSnippet(
+        snippetId: Long,
+        friend: User,
+    ): SnippetBO? {
+        try {
+            return snippetService.shareSnippet(snippetId, friend)
+        } catch (e: Exception) {
+            throw e
+        }
+    }
 }

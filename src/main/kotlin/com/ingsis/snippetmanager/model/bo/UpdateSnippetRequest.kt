@@ -1,5 +1,5 @@
 package com.ingsis.snippetmanager.model.bo
 
-data class UpdateSnippet(
+data class UpdateSnippetRequest(
     val content: String,
 )

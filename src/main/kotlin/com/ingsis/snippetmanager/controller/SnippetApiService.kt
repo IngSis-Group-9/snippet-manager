@@ -47,9 +47,12 @@ class SnippetApiService(private val snippetService: SnippetService) {
         }
     }
 
-    fun getAllSnippetsByUser(user: User): List<SnippetBO>? {
+    fun getAllSnippetsByUser(
+        user: User,
+        snippetName: String,
+    ): List<SnippetBO>? {
         try {
-            return snippetService.getAllSnippetsByUser(user)
+            return snippetService.getAllSnippetsByUser(user, snippetName)
         } catch (e: Exception) {
             throw e
         }

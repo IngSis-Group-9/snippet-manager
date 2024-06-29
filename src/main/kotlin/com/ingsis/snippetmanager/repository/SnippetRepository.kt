@@ -9,6 +9,9 @@ import java.util.Optional
 interface SnippetRepository : JpaRepository<SnippetDE, Long> {
     override fun findById(id: Long): Optional<SnippetDE>
 
-    @Query("SELECT s FROM SnippetDE s WHERE s.owner = :user OR :user MEMBER OF s.sharedWith")
-    fun findAllByOwnerOrSharedWith(user: User): List<SnippetDE>
+    @Query("SELECT s FROM SnippetDE s WHERE (s.owner = :user OR :user MEMBER OF s.sharedWith) AND (s.name LIKE %:snippetName%)")
+    fun findAllByOwnerOrSharedWith(
+        user: User,
+        snippetName: String,
+    ): List<SnippetDE>
 }

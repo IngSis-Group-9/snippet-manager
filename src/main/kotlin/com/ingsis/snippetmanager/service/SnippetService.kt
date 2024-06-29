@@ -22,7 +22,10 @@ class SnippetService(private val snippetRepository: SnippetRepository) {
         return snippetRepository.findAll().map { SnippetMapperModel().convertSnippetDEToBO(it) }
     }
 
-    fun getAllSnippetsByUser(user: User, snippetName: String): List<SnippetBO> {
+    fun getAllSnippetsByUser(
+        user: User,
+        snippetName: String,
+    ): List<SnippetBO> {
         return snippetRepository.findAllByOwnerOrSharedWith(user, snippetName).map { SnippetMapperModel().convertSnippetDEToBO(it) }
     }
 

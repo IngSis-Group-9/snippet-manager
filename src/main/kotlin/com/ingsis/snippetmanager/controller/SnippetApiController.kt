@@ -40,7 +40,11 @@ class SnippetApiController(private val snippetApiService: SnippetApiService, pri
     fun getAllSnippets(
         @RequestParam userId: String,
     ): ResponseEntity<List<SnippetBO>> {
-        return ResponseEntity.ok(snippetApiService.getAllSnippetsByUser(userId))
+        val user = userService.findUserById(userId)
+        if (user.isEmpty) {
+            return ResponseEntity.notFound().build()
+        }
+        return ResponseEntity.ok(snippetApiService.getAllSnippetsByUser(user.get()))
     }
 
     @GetMapping("/{id}")

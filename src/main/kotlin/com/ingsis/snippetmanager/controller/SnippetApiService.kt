@@ -47,11 +47,9 @@ class SnippetApiService(private val snippetService: SnippetService) {
         }
     }
 
-    fun getAllSnippetsByUser(userId: String): List<SnippetBO>? {
+    fun getAllSnippetsByUser(user: User): List<SnippetBO>? {
         try {
-            // los id empiezan con google-oauth2| y luego el id en si, quiero sacarle la primer parte
-
-            return snippetService.getAllSnippetsByUser(userId)
+            return snippetService.getAllSnippetsByUser(user)
         } catch (e: Exception) {
             throw e
         }

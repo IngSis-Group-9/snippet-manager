@@ -22,8 +22,8 @@ class SnippetService(private val snippetRepository: SnippetRepository) {
         return snippetRepository.findAll().map { SnippetMapperModel().convertSnippetDEToBO(it) }
     }
 
-    fun getAllSnippetsByUser(userId: String): List<SnippetBO> {
-        return snippetRepository.findAll().filter { it.getOwner().getId() == userId }.map { SnippetMapperModel().convertSnippetDEToBO(it) }
+    fun getAllSnippetsByUser(user: User): List<SnippetBO> {
+        return snippetRepository.findAllByOwnerOrSharedWith(user).map { SnippetMapperModel().convertSnippetDEToBO(it) }
     }
 
     fun deleteSnippetById(id: Long) {

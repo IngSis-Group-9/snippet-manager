@@ -6,6 +6,7 @@ import com.ingsis.snippetmanager.model.bo.UpdateSnippetRequest
 import com.ingsis.snippetmanager.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -83,5 +84,13 @@ class SnippetApiController(private val snippetApiService: SnippetApiService, pri
         }
         val sharedSnippet = snippetApiService.shareSnippet(snippetId, friend.get())
         return ResponseEntity.ok(sharedSnippet)
+    }
+
+    @DeleteMapping("/{id}")
+    fun deleteSnippet(
+        @PathVariable id: Long,
+    ): ResponseEntity<String> {
+        snippetApiService.deleteSnippetById(id)
+        return ResponseEntity.ok("Snippet deleted successfully")
     }
 }

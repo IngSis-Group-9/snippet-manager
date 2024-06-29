@@ -73,4 +73,12 @@ class SnippetApiService(private val snippetService: SnippetService) {
             throw e
         }
     }
+
+    fun deleteSnippetById(id: Long) {
+        try {
+            snippetService.deleteSnippetById(id)
+        } catch (e: Exception) {
+            throw e
+        }
+    }
 }

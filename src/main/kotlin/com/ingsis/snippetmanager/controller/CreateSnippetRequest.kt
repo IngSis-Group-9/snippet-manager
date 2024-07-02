@@ -13,8 +13,6 @@ class CreateSnippetRequest(
     private val language: String,
     @NotNull
     private val extension: String,
-    @NotNull
-    private val ownerId: String,
 ) {
     fun getId(): Long {
         return id
@@ -34,9 +32,5 @@ class CreateSnippetRequest(
 
     fun getExtension(): String {
         return extension
-    }
-
-    fun getOwnerId(): String {
-        return ownerId
     }
 }

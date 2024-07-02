@@ -5,6 +5,8 @@ import com.ingsis.snippetmanager.model.bo.SnippetBO
 import com.ingsis.snippetmanager.model.bo.UpdateSnippetRequest
 import com.ingsis.snippetmanager.service.UserService
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -22,9 +24,11 @@ import org.springframework.web.bind.annotation.RestController
 class SnippetApiController(private val snippetApiService: SnippetApiService, private val userService: UserService) {
     @PostMapping("/create")
     fun createSnippet(
+        @AuthenticationPrincipal jwt: Jwt,
         @RequestBody request: CreateSnippetRequest,
     ): ResponseEntity<SnippetBO> {
-        val snippetBO = SnippetMapperController(userService).convertSnippetTOToBO(request)
+        val userId = jwt.subject
+        val snippetBO = SnippetMapperController(userService).convertSnippetTOToBO(request, userId)
         snippetApiService.createSnippet(
             snippetBO.getId(),
             snippetBO.getName(),
@@ -39,9 +43,10 @@ class SnippetApiController(private val snippetApiService: SnippetApiService, pri
 
     @GetMapping("/getAll")
     fun getAllSnippets(
-        @RequestParam userId: String,
+        @AuthenticationPrincipal jwt: Jwt,
         @RequestParam snippetName: String,
     ): ResponseEntity<List<SnippetBO>> {
+        val userId = jwt.subject
         val user = userService.findUserById(userId)
         if (user.isEmpty) {
             return ResponseEntity.notFound().build()

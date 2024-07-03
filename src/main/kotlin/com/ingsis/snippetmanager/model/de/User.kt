@@ -18,9 +18,9 @@ data class User(
     @Column(name = "email", nullable = false)
     private val email: String,
     @OneToMany(mappedBy = "owner")
-    private val ownedSnippets: Set<SnippetDE> = HashSet(),
+    private val ownedSnippets: Set<Snippet> = HashSet(),
     @ManyToMany(mappedBy = "sharedWith")
-    private val sharedSnippets: Set<SnippetDE> = HashSet(),
+    private val sharedSnippets: Set<Snippet> = HashSet(),
 ) {
     fun getId(): String {
         return id
@@ -34,11 +34,11 @@ data class User(
         return email
     }
 
-    fun getOwnedSnippets(): Set<SnippetDE> {
+    fun getOwnedSnippets(): Set<Snippet> {
         return ownedSnippets
     }
 
-    fun getSharedSnippets(): Set<SnippetDE> {
+    fun getSharedSnippets(): Set<Snippet> {
         return sharedSnippets
     }
 }

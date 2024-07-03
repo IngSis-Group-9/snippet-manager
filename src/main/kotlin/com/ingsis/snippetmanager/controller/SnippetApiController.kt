@@ -1,10 +1,13 @@
 package com.ingsis.snippetmanager.controller
 
+import com.ingsis.snippetmanager.model.ComplianceEnum
 import com.ingsis.snippetmanager.model.bo.ShareSnippetRequest
 import com.ingsis.snippetmanager.model.bo.SnippetBO
 import com.ingsis.snippetmanager.model.bo.UpdateSnippetRequest
 import com.ingsis.snippetmanager.service.UserService
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -22,26 +25,34 @@ import org.springframework.web.bind.annotation.RestController
 class SnippetApiController(private val snippetApiService: SnippetApiService, private val userService: UserService) {
     @PostMapping("/create")
     fun createSnippet(
+        @AuthenticationPrincipal jwt: Jwt,
         @RequestBody request: CreateSnippetRequest,
     ): ResponseEntity<SnippetBO> {
-        val snippetBO = SnippetMapperController(userService).convertSnippetTOToBO(request)
+        val userId = jwt.subject
+        val user = userService.findUserById(userId)
+        if (user.isEmpty) {
+            return ResponseEntity.notFound().build()
+        }
         snippetApiService.createSnippet(
-            snippetBO.getId(),
-            snippetBO.getName(),
-            snippetBO.getContent(),
-            snippetBO.getLanguage(),
-            snippetBO.getExtension(),
-            snippetBO.getOwner(),
-            snippetBO.getCompliance(),
+            request.getId(),
+            request.getName(),
+            request.getContent(),
+            request.getLanguage(),
+            request.getExtension(),
+            user.get(),
+            ComplianceEnum.PENDING,
         )
+        val author = jwt.getClaimAsString("https://ingisis-group-9/name")
+        val snippetBO = SnippetMapperController(userService).convertSnippetTOToBO(request, author)
         return ResponseEntity.ok(snippetBO)
     }
 
     @GetMapping("/getAll")
     fun getAllSnippets(
-        @RequestParam userId: String,
+        @AuthenticationPrincipal jwt: Jwt,
         @RequestParam snippetName: String,
     ): ResponseEntity<List<SnippetBO>> {
+        val userId = jwt.subject
         val user = userService.findUserById(userId)
         if (user.isEmpty) {
             return ResponseEntity.notFound().build()

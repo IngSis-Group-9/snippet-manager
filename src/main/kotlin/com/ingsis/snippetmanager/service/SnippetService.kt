@@ -1,6 +1,7 @@
 package com.ingsis.snippetmanager.service
 
 import com.ingsis.snippetmanager.model.bo.SnippetBO
+import com.ingsis.snippetmanager.model.de.Snippet
 import com.ingsis.snippetmanager.model.de.User
 import com.ingsis.snippetmanager.model.mapper.SnippetMapperModel
 import com.ingsis.snippetmanager.repository.SnippetRepository
@@ -8,9 +9,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class SnippetService(private val snippetRepository: SnippetRepository) {
-    fun saveSnippet(snippetBO: SnippetBO): SnippetBO {
-        val snippetDE = SnippetMapperModel().convertSnippetBOToDE(snippetBO)
-        return SnippetMapperModel().convertSnippetDEToBO(snippetRepository.save(snippetDE))
+    fun saveSnippet(snippet: Snippet): SnippetBO {
+        return SnippetMapperModel().convertSnippetDEToBO(snippetRepository.save(snippet))
     }
 
     fun getSnippetById(id: Long): SnippetBO {

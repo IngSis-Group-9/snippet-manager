@@ -1,7 +1,6 @@
 package com.ingsis.snippetmanager.model.bo
 
 import com.ingsis.snippetmanager.model.ComplianceEnum
-import com.ingsis.snippetmanager.model.de.User
 
 data class SnippetBO(
     private val id: Long,
@@ -9,7 +8,7 @@ data class SnippetBO(
     private val content: String,
     private val language: String,
     private val extension: String,
-    private val owner: User,
+    private val author: String,
     private val compliance: ComplianceEnum,
 ) {
     fun getId(): Long {
@@ -32,8 +31,8 @@ data class SnippetBO(
         return extension
     }
 
-    fun getOwner(): User {
-        return owner
+    fun getAuthor(): String {
+        return author
     }
 
     fun getCompliance(): ComplianceEnum {

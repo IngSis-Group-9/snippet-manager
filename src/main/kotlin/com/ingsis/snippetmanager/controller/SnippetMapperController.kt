@@ -7,27 +7,16 @@ import com.ingsis.snippetmanager.service.UserService
 class SnippetMapperController(private val userService: UserService) {
     fun convertSnippetTOToBO(
         createSnippetRequest: CreateSnippetRequest,
-        ownerId: String,
+        author: String,
     ): SnippetBO {
-        val user = userService.findUserById(ownerId).orElse(null)
         return SnippetBO(
             createSnippetRequest.getId(),
             createSnippetRequest.getName(),
             createSnippetRequest.getContent(),
             createSnippetRequest.getLanguage(),
             createSnippetRequest.getExtension(),
-            user,
+            author,
             ComplianceEnum.PENDING,
-        )
-    }
-
-    fun convertSnippetBOToTO(snippetBO: SnippetBO): CreateSnippetRequest {
-        return CreateSnippetRequest(
-            snippetBO.getId(),
-            snippetBO.getName(),
-            snippetBO.getContent(),
-            snippetBO.getLanguage(),
-            snippetBO.getExtension(),
         )
     }
 }

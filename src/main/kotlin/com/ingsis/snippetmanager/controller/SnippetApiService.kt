@@ -2,6 +2,7 @@ package com.ingsis.snippetmanager.controller
 
 import com.ingsis.snippetmanager.model.ComplianceEnum
 import com.ingsis.snippetmanager.model.bo.SnippetBO
+import com.ingsis.snippetmanager.model.de.Snippet
 import com.ingsis.snippetmanager.model.de.User
 import com.ingsis.snippetmanager.service.SnippetService
 import org.springframework.stereotype.Service
@@ -18,8 +19,8 @@ class SnippetApiService(private val snippetService: SnippetService) {
         compliance: ComplianceEnum,
     ): SnippetBO {
         try {
-            val snippetBOToSave = SnippetBO(id, name, content, language, extension, owner, compliance)
-            return snippetService.saveSnippet(snippetBOToSave)
+            val snippet = Snippet(name, content, language, extension, owner, compliance)
+            return snippetService.saveSnippet(snippet)
         } catch (e: Exception) {
             throw e
         }
@@ -38,7 +39,7 @@ class SnippetApiService(private val snippetService: SnippetService) {
                     content,
                     existingSnippetBO.getLanguage(),
                     existingSnippetBO.getExtension(),
-                    existingSnippetBO.getOwner(),
+                    existingSnippetBO.getAuthor(),
                     existingSnippetBO.getCompliance(),
                 )
             return snippetService.updateSnippet(snippetBOToUpdate, id)

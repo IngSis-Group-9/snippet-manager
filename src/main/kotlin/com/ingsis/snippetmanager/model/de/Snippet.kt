@@ -14,7 +14,7 @@ import jakarta.persistence.Table
 
 @Entity
 @Table(name = "snippets")
-data class SnippetDE(
+data class Snippet(
     @Column(name = "name", nullable = false)
     private val name: String,
     @Column(name = "content", nullable = false, columnDefinition = "TEXT")

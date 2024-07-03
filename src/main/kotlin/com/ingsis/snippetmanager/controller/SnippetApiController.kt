@@ -1,5 +1,6 @@
 package com.ingsis.snippetmanager.controller
 
+import com.ingsis.snippetmanager.model.ComplianceEnum
 import com.ingsis.snippetmanager.model.bo.ShareSnippetRequest
 import com.ingsis.snippetmanager.model.bo.SnippetBO
 import com.ingsis.snippetmanager.model.bo.UpdateSnippetRequest
@@ -28,16 +29,21 @@ class SnippetApiController(private val snippetApiService: SnippetApiService, pri
         @RequestBody request: CreateSnippetRequest,
     ): ResponseEntity<SnippetBO> {
         val userId = jwt.subject
-        val snippetBO = SnippetMapperController(userService).convertSnippetTOToBO(request, userId)
+        val user = userService.findUserById(userId)
+        if (user.isEmpty) {
+            return ResponseEntity.notFound().build()
+        }
         snippetApiService.createSnippet(
-            snippetBO.getId(),
-            snippetBO.getName(),
-            snippetBO.getContent(),
-            snippetBO.getLanguage(),
-            snippetBO.getExtension(),
-            snippetBO.getOwner(),
-            snippetBO.getCompliance(),
+            request.getId(),
+            request.getName(),
+            request.getContent(),
+            request.getLanguage(),
+            request.getExtension(),
+            user.get(),
+            ComplianceEnum.PENDING,
         )
+        val author = jwt.getClaimAsString("https://ingisis-group-9/name")
+        val snippetBO = SnippetMapperController(userService).convertSnippetTOToBO(request, author)
         return ResponseEntity.ok(snippetBO)
     }
 

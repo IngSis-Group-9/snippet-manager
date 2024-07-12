@@ -30,4 +30,9 @@ class TestCaseService(
     private fun parseStringToList(string: String): List<String> {
         return string.substring(0, string.length - 1).split(",").map { it.trim() }
     }
+
+    fun getTestCasesBySnippetId(snippetId: Long): List<TestCase> {
+        val snippet = snippetRepository.findById(snippetId).orElseThrow { Exception("Snippet not found") }
+        return testCaseRepositroy.findAllBySnippet(snippet)
+    }
 }

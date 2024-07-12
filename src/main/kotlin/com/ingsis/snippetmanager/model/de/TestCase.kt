@@ -32,4 +32,28 @@ class TestCase(
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private val id: Long = 0
+
+    fun getId(): Long {
+        return id
+    }
+
+    fun getName(): String {
+        return name
+    }
+
+    fun getInput(): List<String> {
+        return input
+    }
+
+    fun getOutput(): List<String> {
+        return output
+    }
+
+    fun getEnvVars(): List<String> {
+        return envVars
+    }
+
+    fun getSnippet(): Snippet {
+        return snippet
+    }
 }

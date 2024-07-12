@@ -35,4 +35,10 @@ class TestCaseService(
         val snippet = snippetRepository.findById(snippetId).orElseThrow { Exception("Snippet not found") }
         return testCaseRepositroy.findAllBySnippet(snippet)
     }
+
+    fun removeTestCase(id: Long): String {
+        val testCase = testCaseRepositroy.findById(id).orElseThrow { Exception("Test case not found") }
+        testCaseRepositroy.delete(testCase)
+        return "Test case deleted successfully"
+    }
 }

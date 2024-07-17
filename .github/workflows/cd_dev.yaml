@@ -29,5 +29,6 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
+          platforms: linux/amd64,linux/arm64,windows/amd64
           tags: |
             ghcr.io/ingsis-group-9/snippet-manager:${{ steps.short-sha.outputs.sha }}          

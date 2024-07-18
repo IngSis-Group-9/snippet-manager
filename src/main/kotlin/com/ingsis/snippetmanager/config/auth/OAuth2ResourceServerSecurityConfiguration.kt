@@ -1,4 +1,4 @@
-package com.ingsis.snippetmanager.auth
+package com.ingsis.snippetmanager.config.auth
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -24,19 +24,19 @@ class OAuth2ResourceServerSecurityConfiguration(
 ) {
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
-        http.authorizeHttpRequests {
-            it
+        http
+            .authorizeHttpRequests {
+                it
 //                .requestMatchers("/").permitAll()
 //                .requestMatchers(GET, "/snippets").hasAuthority("SCOPE_read:snippets")
 //                .requestMatchers(GET, "/snippets/*").hasAuthority("SCOPE_read:snippets")
 //                .requestMatchers(POST, "/snippets").hasAuthority("SCOPE_write:snippets")
-                .anyRequest().authenticated()
-        }
-            .oauth2ResourceServer { it.jwt(withDefaults()) }
+                    .anyRequest()
+                    .authenticated()
+            }.oauth2ResourceServer { it.jwt(withDefaults()) }
             .cors {
                 it.configurationSource { CorsConfig().corsFilter() }
-            }
-            .csrf {
+            }.csrf {
                 it.disable()
             }
         return http.build()

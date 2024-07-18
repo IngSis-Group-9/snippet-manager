@@ -1,6 +1,6 @@
 package com.ingsis.snippetmanager.repository
 
-import com.ingsis.snippetmanager.model.de.User
+import com.ingsis.snippetmanager.model.entity.User
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import java.util.Optional

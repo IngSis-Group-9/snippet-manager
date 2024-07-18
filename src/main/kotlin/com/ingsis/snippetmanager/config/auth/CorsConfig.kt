@@ -1,4 +1,4 @@
-package com.ingsis.snippetmanager.auth
+package com.ingsis.snippetmanager.config.auth
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

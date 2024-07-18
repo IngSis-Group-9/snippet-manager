@@ -1,4 +1,4 @@
-package com.ingsis.snippetmanager.model
+package com.ingsis.snippetmanager.model.enums
 
 enum class ComplianceEnum {
     PENDING,

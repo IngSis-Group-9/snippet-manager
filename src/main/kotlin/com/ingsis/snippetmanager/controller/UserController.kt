@@ -1,6 +1,6 @@
 package com.ingsis.snippetmanager.controller
 
-import com.ingsis.snippetmanager.model.de.User
+import com.ingsis.snippetmanager.model.entity.User
 import com.ingsis.snippetmanager.service.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RestController
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/snippet-manager/user")
-class UserController(private val userService: UserService) {
+class UserController(
+    private val userService: UserService,
+) {
     @PostMapping("/register")
     fun register(
         @AuthenticationPrincipal jwt: Jwt,

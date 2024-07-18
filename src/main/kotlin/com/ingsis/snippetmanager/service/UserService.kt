@@ -1,12 +1,14 @@
 package com.ingsis.snippetmanager.service
 
-import com.ingsis.snippetmanager.model.de.User
+import com.ingsis.snippetmanager.model.entity.User
 import com.ingsis.snippetmanager.repository.UserRepository
 import org.springframework.stereotype.Service
 import java.util.Optional
 
 @Service
-class UserService(private val userRepository: UserRepository) {
+class UserService(
+    private val userRepository: UserRepository,
+) {
     fun registerUser(
         auth0Id: String,
         name: String,
@@ -24,18 +26,12 @@ class UserService(private val userRepository: UserRepository) {
         return newUser
     }
 
-    fun findUserById(id: String): Optional<User> {
-        return userRepository.findById(id)
-    }
+    fun findUserById(id: String): Optional<User> = userRepository.findById(id)
 
-    fun createUser(user: User): Optional<User> {
-        return Optional.of(userRepository.save(user))
-    }
+    fun createUser(user: User): Optional<User> = Optional.of(userRepository.save(user))
 
     fun findFriends(
         name: String,
         userId: String,
-    ): List<User>? {
-        return userRepository.findByName(name, userId)
-    }
+    ): List<User>? = userRepository.findByName(name, userId)
 }

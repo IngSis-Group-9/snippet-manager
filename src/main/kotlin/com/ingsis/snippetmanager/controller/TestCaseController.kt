@@ -1,7 +1,7 @@
 package com.ingsis.snippetmanager.controller
 
-import com.ingsis.snippetmanager.dto.TestCaseDTO
-import com.ingsis.snippetmanager.model.de.TestCase
+import com.ingsis.snippetmanager.model.dto.TestCaseDTO
+import com.ingsis.snippetmanager.model.entity.TestCase
 import com.ingsis.snippetmanager.service.TestCaseService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RestController
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/snippet-manager/testCases")
-class TestCaseController(private val testCaseService: TestCaseService) {
+class TestCaseController(
+    private val testCaseService: TestCaseService,
+) {
     @PostMapping("/create")
     fun createTestCase(
         @RequestBody testCaseDTO: TestCaseDTO,
@@ -28,7 +30,7 @@ class TestCaseController(private val testCaseService: TestCaseService) {
 
     @GetMapping
     fun getTestCasesBySnippetId(
-        @RequestParam snippetId: Long,
+        @RequestParam snippetId: String,
     ): ResponseEntity<List<TestCase>> {
         val testCases = testCaseService.getTestCasesBySnippetId(snippetId)
         return ResponseEntity.ok(testCases)
@@ -36,7 +38,7 @@ class TestCaseController(private val testCaseService: TestCaseService) {
 
     @DeleteMapping("/{id}")
     fun removeTestCase(
-        @PathVariable id: Long,
+        @PathVariable id: String,
     ): ResponseEntity<String> {
         val message = testCaseService.removeTestCase(id)
         return ResponseEntity.ok(message)

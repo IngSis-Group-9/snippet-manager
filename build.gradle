@@ -18,6 +18,14 @@ java {
 
 repositories {
 	mavenCentral()
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/IngSis-Group-9/snippet-manager") // reemplaza OWNER y REPO con tu nombre de usuario y repositorio
+        credentials {
+            username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
+            password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
 }
 
 configurations {

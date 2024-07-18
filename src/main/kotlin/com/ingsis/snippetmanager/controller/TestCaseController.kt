@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/testCases")
+@RequestMapping("/snippet-manager/testCases")
 class TestCaseController(private val testCaseService: TestCaseService) {
     @PostMapping("/create")
     fun createTestCase(

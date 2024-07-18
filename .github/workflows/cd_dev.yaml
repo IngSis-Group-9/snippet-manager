@@ -31,4 +31,5 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
-            ghcr.io/ingsis-group-9/snippet-manager:${{ steps.short-sha.outputs.sha }}          
+            ghcr.io/ingsis-group-9/snippet-manager:${{ steps.short-sha.outputs.sha }}
+            ghcr.io/ingsis-group-9/snippet-manager:latest

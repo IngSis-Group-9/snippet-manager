@@ -33,3 +33,15 @@ jobs:
           tags: |
             ghcr.io/ingsis-group-9/snippet-manager:${{ steps.short-sha.outputs.sha }}
             ghcr.io/ingsis-group-9/snippet-manager:latest
+
+      - name: Update Service
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VM_HOST_DEV }}
+          username: "azureuser"
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd ~/projects/infra
+            docker-compose stop snippet-manager
+            docker-compose pull snippet-manager
+            docker-compose up snippet-manager -d --build

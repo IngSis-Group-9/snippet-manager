@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/snippet-manager/user")
+@RequestMapping("/user")
 class UserController(private val userService: UserService) {
     @PostMapping("/register")
     fun register(

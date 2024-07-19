@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/snippet-manager/snippets")
+@RequestMapping("/snippets")
 class SnippetApiController(private val snippetApiService: SnippetApiService, private val userService: UserService) {
     @GetMapping("/test")
     fun test(): ResponseEntity<String> {

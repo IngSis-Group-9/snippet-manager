@@ -2,7 +2,6 @@ package com.ingsis.snippetmanager.controller
 
 import com.ingsis.snippetmanager.model.entity.User
 import com.ingsis.snippetmanager.service.UserService
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
@@ -16,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/snippet-manager/user")
+@RequestMapping("/user")
 class UserController(
     private val userService: UserService,
 ) {
@@ -34,14 +33,7 @@ class UserController(
     @GetMapping("/{id}")
     fun findUserById(
         @PathVariable id: String,
-    ): ResponseEntity<User> {
-        val user = userService.findUserById(id)
-        return if (user.isPresent) {
-            ResponseEntity.ok(user.get())
-        } else {
-            ResponseEntity(HttpStatus.NOT_FOUND)
-        }
-    }
+    ): ResponseEntity<User> = ResponseEntity.ok(userService.findUserById(id))
 
     @GetMapping("/friends")
     fun findFriends(

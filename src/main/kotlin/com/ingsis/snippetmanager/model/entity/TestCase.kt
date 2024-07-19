@@ -8,14 +8,14 @@ import jakarta.persistence.Table
 
 @Entity
 @Table(name = "test_cases")
-class TestCase(
-    val name: String,
+data class TestCase(
+    var name: String,
     @ElementCollection
-    val input: List<String> = ArrayList(),
+    var input: List<String> = ArrayList(),
     @ElementCollection
-    val output: List<String> = emptyList(),
+    var output: List<String> = emptyList(),
     @ElementCollection
-    val envVars: Map<String, String> = emptyMap(),
+    var envVars: Map<String, String> = emptyMap(),
     @ManyToOne
     @JoinColumn(name = "snippet_id", nullable = false)
     val snippet: Snippet,

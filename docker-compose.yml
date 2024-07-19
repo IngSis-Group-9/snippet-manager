@@ -12,9 +12,13 @@ services:
       DB_URL: jdbc:postgresql://snippet-manager-db:5432/snippet-manager
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_STREAM_REQUEST_LINTER_KEY: request_linter
+      REDIS_STREAM_RESPONSE_LINTER_KEY: response_linter
 
   api:
-    container_name: "asset_service"
+    container_name: asset_service
     image: ghcr.io/austral-ingsis/snippet-asset-service:latest
     ports:
       - "8081:8080"
@@ -23,8 +27,8 @@ services:
       NEW_RELIC_APP_NAME: "asset service"
 
   azurite:
+    container_name: azurite
     image: mcr.microsoft.com/azure-storage/azurite
-    container_name: "azurite"
     hostname: azurite
     restart: always
     ports:
@@ -43,6 +47,12 @@ services:
       - POSTGRES_DB=snippet-manager
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+
+  redis:
+    container_name: redis
+    image: redis:6-alpine
+    ports:
+      - "6379:6379"
 
 volumes:
   blob:

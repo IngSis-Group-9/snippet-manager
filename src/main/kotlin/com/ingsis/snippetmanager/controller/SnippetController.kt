@@ -1,9 +1,8 @@
 package com.ingsis.snippetmanager.controller
 
-import com.ingsis.snippetmanager.model.dto.CreateSnippetRequest
-import com.ingsis.snippetmanager.model.dto.ShareSnippetRequest
-import com.ingsis.snippetmanager.model.dto.SnippetDto
-import com.ingsis.snippetmanager.model.dto.UpdateSnippetRequest
+import com.ingsis.snippetmanager.model.dto.CreateSnippetDTO
+import com.ingsis.snippetmanager.model.dto.SnippetDTO
+import com.ingsis.snippetmanager.model.dto.UpdateSnippetDTO
 import com.ingsis.snippetmanager.service.SnippetService
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -21,38 +20,37 @@ import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/snippet-manager/snippets")
+@RequestMapping("/snippets")
 class SnippetController(
     private val snippetService: SnippetService,
 ) {
     @PostMapping
     fun createSnippet(
         @AuthenticationPrincipal jwt: Jwt,
-        @RequestBody request: CreateSnippetRequest,
-    ): ResponseEntity<SnippetDto> = ResponseEntity.ok(snippetService.saveSnippet(request, jwt.subject))
+        @RequestBody createSnippetDTO: CreateSnippetDTO,
+    ): ResponseEntity<SnippetDTO> = ResponseEntity.ok(snippetService.saveSnippet(createSnippetDTO, jwt.subject))
 
     @GetMapping
     fun getAllSnippets(
         @AuthenticationPrincipal jwt: Jwt,
         @RequestParam snippetName: String,
-    ): ResponseEntity<List<SnippetDto>> = ResponseEntity.ok(snippetService.getAllSnippets(jwt.subject, snippetName))
+    ): ResponseEntity<List<SnippetDTO>> = ResponseEntity.ok(snippetService.getAllSnippets(jwt.subject, snippetName))
 
     @GetMapping("/{id}")
     fun getSnippet(
         @PathVariable id: String,
-    ): ResponseEntity<SnippetDto> = ResponseEntity.ok(snippetService.getSnippet(id))
+    ): ResponseEntity<SnippetDTO> = ResponseEntity.ok(snippetService.getSnippet(id))
 
-    @PutMapping("/{id}")
+    @PutMapping
     fun updateSnippet(
-        @PathVariable id: String,
-        @RequestBody request: UpdateSnippetRequest,
-    ): ResponseEntity<SnippetDto> = ResponseEntity.ok(snippetService.updateSnippet(request, id))
+        @RequestBody updateSnippetDTO: UpdateSnippetDTO,
+    ): ResponseEntity<SnippetDTO> = ResponseEntity.ok(snippetService.updateSnippet(updateSnippetDTO))
 
-    @PostMapping("/{id}/share")
+    @PostMapping("/{id}/share/{shareId}")
     fun shareSnippet(
         @PathVariable id: String,
-        @RequestBody request: ShareSnippetRequest,
-    ): ResponseEntity<SnippetDto> = ResponseEntity.ok(snippetService.shareSnippet(request, id))
+        @PathVariable shareId: String,
+    ): ResponseEntity<SnippetDTO> = ResponseEntity.ok(snippetService.shareSnippet(shareId, id))
 
     @DeleteMapping("/{id}")
     fun deleteSnippet(

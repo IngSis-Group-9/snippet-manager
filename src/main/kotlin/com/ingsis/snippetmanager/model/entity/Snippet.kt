@@ -2,6 +2,8 @@ package com.ingsis.snippetmanager.model.entity
 
 import com.ingsis.snippetmanager.model.enums.ComplianceEnum
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.JoinTable
 import jakarta.persistence.ManyToMany
@@ -15,7 +17,8 @@ data class Snippet(
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
     val owner: User,
-    val compliance: ComplianceEnum,
+    @Enumerated(EnumType.STRING)
+    var compliance: ComplianceEnum,
     @ManyToMany
     @JoinTable(
         name = "snippet_shared_with",

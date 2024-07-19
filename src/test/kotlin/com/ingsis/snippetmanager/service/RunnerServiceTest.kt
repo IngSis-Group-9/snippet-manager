@@ -6,7 +6,8 @@ import com.ingsis.snippetmanager.model.dto.SnippetContentDTO
 import com.ingsis.snippetmanager.model.dto.UserRuleDTO
 import com.ingsis.snippetmanager.model.enums.RuleType
 import com.ingsis.snippetmanager.model.enums.RuleValueType
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
@@ -18,7 +19,6 @@ import org.springframework.http.ResponseEntity
 
 @ExtendWith(MockitoExtension::class)
 class RunnerServiceTest {
-
     @Mock
     private lateinit var processingService: CodeProcessingService
 
@@ -33,13 +33,14 @@ class RunnerServiceTest {
         val snippetContentDTO = SnippetContentDTO(content = "original snippet content")
         val userId = "user1"
         val token = "token123"
-        val formatterRules = FormatterRulesDTO(
-            spaceBeforeColon = true,
-            spaceAfterColon = false,
-            spaceAroundAssignment = true,
-            newlineBeforePrintln = 2,
-            nSpacesIndentationForIfStatement = 4
-        )
+        val formatterRules =
+            FormatterRulesDTO(
+                spaceBeforeColon = true,
+                spaceAfterColon = false,
+                spaceAroundAssignment = true,
+                newlineBeforePrintln = 2,
+                nSpacesIndentationForIfStatement = 4,
+            )
         val formattedContent = "formatted snippet content"
         val response = ResponseEntity(formattedContent, HttpStatus.OK)
 
@@ -53,7 +54,7 @@ class RunnerServiceTest {
                     valueType = RuleValueType.BOOLEAN,
                     ruleType = RuleType.FORMATTER,
                     value = "true",
-                    isActive = true
+                    isActive = true,
                 ),
                 UserRuleDTO(
                     id = "2",
@@ -62,7 +63,7 @@ class RunnerServiceTest {
                     valueType = RuleValueType.BOOLEAN,
                     ruleType = RuleType.FORMATTER,
                     value = "false",
-                    isActive = true
+                    isActive = true,
                 ),
                 UserRuleDTO(
                     id = "3",
@@ -71,7 +72,7 @@ class RunnerServiceTest {
                     valueType = RuleValueType.BOOLEAN,
                     ruleType = RuleType.FORMATTER,
                     value = "true",
-                    isActive = true
+                    isActive = true,
                 ),
                 UserRuleDTO(
                     id = "4",
@@ -80,7 +81,7 @@ class RunnerServiceTest {
                     valueType = RuleValueType.INTEGER,
                     ruleType = RuleType.FORMATTER,
                     value = "2",
-                    isActive = true
+                    isActive = true,
                 ),
                 UserRuleDTO(
                     id = "5",
@@ -89,15 +90,17 @@ class RunnerServiceTest {
                     valueType = RuleValueType.INTEGER,
                     ruleType = RuleType.FORMATTER,
                     value = "4",
-                    isActive = true
-                )
-            )
+                    isActive = true,
+                ),
+            ),
         )
-        `when`(processingService.formatSnippet(
-            snippetContentDTO.content,
-            formatterRules,
-            token
-        )).thenReturn(response)
+        `when`(
+            processingService.formatSnippet(
+                snippetContentDTO.content,
+                formatterRules,
+                token,
+            ),
+        ).thenReturn(response)
 
         val result = runnerService.formatSnippet(snippetContentDTO, userId, token)
 
@@ -109,13 +112,14 @@ class RunnerServiceTest {
         val snippetContentDTO = SnippetContentDTO(content = "original snippet content")
         val userId = "user1"
         val token = "token123"
-        val formatterRules = FormatterRulesDTO(
-            spaceBeforeColon = true,
-            spaceAfterColon = false,
-            spaceAroundAssignment = true,
-            newlineBeforePrintln = 2,
-            nSpacesIndentationForIfStatement = 4
-        )
+        val formatterRules =
+            FormatterRulesDTO(
+                spaceBeforeColon = true,
+                spaceAfterColon = false,
+                spaceAroundAssignment = true,
+                newlineBeforePrintln = 2,
+                nSpacesIndentationForIfStatement = 4,
+            )
         val response = ResponseEntity("error", HttpStatus.INTERNAL_SERVER_ERROR)
 
         // Setup mock behavior
@@ -128,7 +132,7 @@ class RunnerServiceTest {
                     valueType = RuleValueType.BOOLEAN,
                     ruleType = RuleType.FORMATTER,
                     value = "true",
-                    isActive = true
+                    isActive = true,
                 ),
                 UserRuleDTO(
                     id = "2",
@@ -137,7 +141,7 @@ class RunnerServiceTest {
                     valueType = RuleValueType.BOOLEAN,
                     ruleType = RuleType.FORMATTER,
                     value = "false",
-                    isActive = true
+                    isActive = true,
                 ),
                 UserRuleDTO(
                     id = "3",
@@ -146,7 +150,7 @@ class RunnerServiceTest {
                     valueType = RuleValueType.BOOLEAN,
                     ruleType = RuleType.FORMATTER,
                     value = "true",
-                    isActive = true
+                    isActive = true,
                 ),
                 UserRuleDTO(
                     id = "4",
@@ -155,7 +159,7 @@ class RunnerServiceTest {
                     valueType = RuleValueType.INTEGER,
                     ruleType = RuleType.FORMATTER,
                     value = "2",
-                    isActive = true
+                    isActive = true,
                 ),
                 UserRuleDTO(
                     id = "5",
@@ -164,16 +168,18 @@ class RunnerServiceTest {
                     valueType = RuleValueType.INTEGER,
                     ruleType = RuleType.FORMATTER,
                     value = "4",
-                    isActive = true
-                )
-            )
+                    isActive = true,
+                ),
+            ),
         )
 
-        `when`(processingService.formatSnippet(
-            snippetContentDTO.content,
-            formatterRules,
-            token
-        )).thenReturn(response)
+        `when`(
+            processingService.formatSnippet(
+                snippetContentDTO.content,
+                formatterRules,
+                token,
+            ),
+        ).thenReturn(response)
 
         assertThrows(ServiceUnavailableException::class.java) {
             runnerService.formatSnippet(snippetContentDTO, userId, token)

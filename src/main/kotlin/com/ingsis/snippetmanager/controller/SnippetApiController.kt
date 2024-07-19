@@ -23,6 +23,11 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/snippet-manager/snippets")
 class SnippetApiController(private val snippetApiService: SnippetApiService, private val userService: UserService) {
+    @GetMapping("/test")
+    fun test(): ResponseEntity<String> {
+        return ResponseEntity.ok("Hello World")
+    }
+
     @PostMapping("/create")
     fun createSnippet(
         @AuthenticationPrincipal jwt: Jwt,

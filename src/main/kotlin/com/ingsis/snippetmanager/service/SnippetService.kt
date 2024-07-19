@@ -2,10 +2,9 @@ package com.ingsis.snippetmanager.service
 
 import com.ingsis.snippetmanager.exception.NotFoundException
 import com.ingsis.snippetmanager.exception.ServiceUnavailableException
-import com.ingsis.snippetmanager.model.dto.CreateSnippetRequest
-import com.ingsis.snippetmanager.model.dto.ShareSnippetRequest
-import com.ingsis.snippetmanager.model.dto.SnippetDto
-import com.ingsis.snippetmanager.model.dto.UpdateSnippetRequest
+import com.ingsis.snippetmanager.model.dto.CreateSnippetDTO
+import com.ingsis.snippetmanager.model.dto.SnippetDTO
+import com.ingsis.snippetmanager.model.dto.UpdateSnippetDTO
 import com.ingsis.snippetmanager.model.entity.Snippet
 import com.ingsis.snippetmanager.model.enums.ComplianceEnum
 import com.ingsis.snippetmanager.repository.SnippetRepository
@@ -22,44 +21,40 @@ class SnippetService(
 
     @Transactional
     fun saveSnippet(
-        request: CreateSnippetRequest,
+        createSnippetDTO: CreateSnippetDTO,
         userId: String,
-    ): SnippetDto {
-        log.info("Creating snippet for user: $userId (name: ${request.name}, content: ${request.content})")
-        val user =
-            userService.findUserById(userId).orElseThrow {
-                log.error("User with id: $userId not found")
-                NotFoundException("User with id: $userId not found")
-            }
-
+    ): SnippetDTO {
+        log.info("Creating snippet for user: $userId (name: ${createSnippetDTO.name}, content: ${createSnippetDTO.content})")
+        val user = userService.findUserById(userId)
         val newSnippet =
             snippetRepository.save(
                 Snippet(
-                    name = request.name,
-                    language = request.language,
-                    extension = request.extension,
+                    name = createSnippetDTO.name,
+                    language = createSnippetDTO.language,
+                    extension = createSnippetDTO.extension,
                     owner = user,
                     compliance = ComplianceEnum.PENDING,
                 ),
             )
 
-        val response = assetService.saveSnippet(newSnippet.id!!, request.content)
+        val response = assetService.saveSnippet(newSnippet.id!!, createSnippetDTO.content)
         if (response.statusCode.is2xxSuccessful) {
-            return SnippetDto(
+            return SnippetDTO(
                 newSnippet.id,
                 newSnippet.name,
-                request.content,
+                createSnippetDTO.content,
                 newSnippet.language,
                 newSnippet.extension,
                 newSnippet.owner.name,
                 newSnippet.compliance,
             )
         } else {
-            throw ServiceUnavailableException("Error saving snippet content (id: ${newSnippet.id}, content: ${request.content})")
+            log.error("Error saving snippet content (id: ${newSnippet.id}, content: ${createSnippetDTO.content})")
+            throw ServiceUnavailableException("Error saving snippet content (id: ${newSnippet.id}, content: ${createSnippetDTO.content})")
         }
     }
 
-    fun getSnippet(id: String): SnippetDto {
+    fun getSnippet(id: String): SnippetDTO {
         log.info("Getting snippet with id: $id")
         val snippet =
             snippetRepository.findById(id).orElseThrow {
@@ -69,7 +64,7 @@ class SnippetService(
 
         val content = assetService.getSnippet(id)
         if (content.statusCode.is2xxSuccessful) {
-            return SnippetDto(
+            return SnippetDTO(
                 snippet.id!!,
                 snippet.name,
                 content.body!!,
@@ -79,6 +74,7 @@ class SnippetService(
                 snippet.compliance,
             )
         } else {
+            log.error("Error getting snippet content id: $id")
             throw ServiceUnavailableException("Error getting snippet content id: $id")
         }
     }
@@ -86,20 +82,17 @@ class SnippetService(
     fun getAllSnippets(
         userId: String,
         snippetName: String,
-    ): List<SnippetDto> {
+    ): List<SnippetDTO> {
         log.info("Getting all snippets for user: $userId (name: $snippetName)")
-        val user =
-            userService.findUserById(userId).orElseThrow {
-                log.error("User with id: $userId not found")
-                NotFoundException("User with id: $userId not found")
-            }
+        val user = userService.findUserById(userId)
         val snippets = snippetRepository.findAllByOwnerOrSharedWith(user, snippetName)
 
         return snippets.map {
             val content = assetService.getSnippet(it.id!!)
             if (content.statusCode.is2xxSuccessful) {
-                SnippetDto(it.id, it.name, content.body!!, it.language, it.extension, it.owner.name, it.compliance)
+                SnippetDTO(it.id, it.name, content.body!!, it.language, it.extension, it.owner.name, it.compliance)
             } else {
+                log.error("Error getting snippet content id: ${it.id}")
                 throw ServiceUnavailableException("Error getting snippet content id: ${it.id}")
             }
         }
@@ -109,56 +102,52 @@ class SnippetService(
         snippetRepository.deleteById(id)
     }
 
-    fun updateSnippet(
-        request: UpdateSnippetRequest,
-        id: String,
-    ): SnippetDto {
+    @Transactional
+    fun updateSnippet(updateSnippetDTO: UpdateSnippetDTO): SnippetDTO {
         val snippet =
-            snippetRepository.findById(id).orElseThrow {
-                log.error("Snippet with id: $id not found")
-                NotFoundException("Snippet with id: $id not found")
+            snippetRepository.findById(updateSnippetDTO.id).orElseThrow {
+                log.error("Snippet with id: ${updateSnippetDTO.id} not found")
+                NotFoundException("Snippet with id: ${updateSnippetDTO.id} not found")
             }
         val deleteResponse = assetService.deleteSnippet(snippet.id!!)
         if (!deleteResponse.statusCode.is2xxSuccessful) {
-            throw ServiceUnavailableException("Error deleting snippet content id: $id")
+            throw ServiceUnavailableException("Error deleting snippet content id: ${updateSnippetDTO.id}")
         }
 
-        val updateResponse = assetService.saveSnippet(snippet.id!!, request.content)
+        val updateResponse = assetService.saveSnippet(snippet.id, updateSnippetDTO.content)
         if (updateResponse.statusCode.is2xxSuccessful) {
-            return SnippetDto(
+            return SnippetDTO(
                 snippet.id,
                 snippet.name,
-                request.content,
+                updateSnippetDTO.content,
                 snippet.language,
                 snippet.extension,
                 snippet.owner.name,
                 snippet.compliance,
             )
         } else {
-            throw ServiceUnavailableException("Error saving snippet content (id: ${snippet.id}, content: ${request.content})")
+            log.error("Error saving snippet content (id: ${snippet.id}, content: ${updateSnippetDTO.content})")
+            throw ServiceUnavailableException("Error saving snippet content (id: ${snippet.id}, content: ${updateSnippetDTO.content})")
         }
     }
 
+    @Transactional
     fun shareSnippet(
-        request: ShareSnippetRequest,
+        shareId: String,
         id: String,
-    ): SnippetDto {
+    ): SnippetDTO {
         val snippet =
             snippetRepository.findById(id).orElseThrow {
                 log.error("Snippet with id: $id not found")
                 NotFoundException("Snippet with id: $id not found")
             }
-        val user =
-            userService.findUserById(request.userId).orElseThrow {
-                log.error("User with id: ${request.userId} not found")
-                NotFoundException("User with id: ${request.userId} not found")
-            }
+        val user = userService.findUserById(shareId)
         snippet.sharedWith.add(user)
         val updatedSnippet = snippetRepository.save(snippet)
 
         val content = assetService.getSnippet(updatedSnippet.id!!)
         if (content.statusCode.is2xxSuccessful) {
-            return SnippetDto(
+            return SnippetDTO(
                 updatedSnippet.id,
                 updatedSnippet.name,
                 content.body!!,
@@ -168,7 +157,35 @@ class SnippetService(
                 updatedSnippet.compliance,
             )
         } else {
+            log.error("Error getting snippet content id: $id")
             throw ServiceUnavailableException("Error getting snippet content id: $id")
         }
+    }
+
+    @Transactional
+    fun setSnippetsComplianceToPending(userId: String): List<Snippet> {
+        log.info("Updating all snippet compliance for user: $userId")
+        val snippets = snippetRepository.findAllByOwnerId(userId)
+        snippets.forEach {
+            it.compliance = ComplianceEnum.PENDING
+        }
+        snippetRepository.saveAll(snippets)
+        return snippets
+    }
+
+    @Transactional
+    fun updateSnippetCompliance(
+        snippetId: String,
+        userId: String,
+        complianceEnum: ComplianceEnum,
+    ) {
+        log.info("Updating snippet compliance for snippet: $snippetId for user: $userId")
+        val snippet =
+            snippetRepository.findByIdAndOwnerId(snippetId, userId).orElseThrow {
+                log.error("Snippet with id: $snippetId and owner: $userId not found")
+                NotFoundException("Snippet with id: $snippetId and owner: $userId not found")
+            }
+        snippet.compliance = complianceEnum
+        snippetRepository.save(snippet)
     }
 }

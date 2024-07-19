@@ -8,4 +8,9 @@ class SnippetManagerApplicationTests {
     @Test
     fun contextLoads() {
     }
+
+    @Test
+    fun testMain() {
+        main(arrayOf())
+    }
 }

@@ -2,7 +2,7 @@ name: "Continuous Deployment"
 on:
   push:
     branches:
-      - dev
+      - main
 jobs:
   push_to_registry:
     name: Push Docker image to GitHub Packages
@@ -31,17 +31,17 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
-            ghcr.io/ingsis-group-9/snippet-manager:${{ steps.short-sha.outputs.sha }}
-            ghcr.io/ingsis-group-9/snippet-manager:latest
+            ghcr.io/ingsis-group-9/snippet-manager-prod:${{ steps.short-sha.outputs.sha }}
+            ghcr.io/ingsis-group-9/snippet-manager-prod:latest
 
       - name: Update Service
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.VM_HOST_DEV }}
+          host: ${{ secrets.VM_HOST_PROD }}
           username: "azureuser"
-          key: ${{ secrets.SSH_KEY }}
+          key: ${{ secrets.SSH_KEY_PROD }}
           script: |
             cd ~/projects/infra
-            docker-compose -f docker-compose.dev.yml stop snippet-manager
-            docker-compose -f docker-compose.dev.yml pull snippet-manager
-            docker-compose -f docker-compose.dev.yml up snippet-manager -d --build
+            docker-compose -f docker-compose.prod.yml stop snippet-manager
+            docker-compose -f docker-compose.prod.yml pull snippet-manager
+            docker-compose -f docker-compose.prod.yml up snippet-manager -d --build

@@ -1,9 +1,8 @@
 package com.ingsis.snippetmanager.controller
 
-import com.ingsis.snippetmanager.model.dto.CreateSnippetRequest
-import com.ingsis.snippetmanager.model.dto.ShareSnippetRequest
-import com.ingsis.snippetmanager.model.dto.SnippetDto
-import com.ingsis.snippetmanager.model.dto.UpdateSnippetRequest
+import com.ingsis.snippetmanager.model.dto.CreateSnippetDTO
+import com.ingsis.snippetmanager.model.dto.SnippetDTO
+import com.ingsis.snippetmanager.model.dto.UpdateSnippetDTO
 import com.ingsis.snippetmanager.model.enums.ComplianceEnum
 import com.ingsis.snippetmanager.service.SnippetService
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -30,10 +29,9 @@ class SnippetControllerTest {
     private lateinit var snippetController: SnippetController
 
     private lateinit var jwt: Jwt
-    private val snippetDto = SnippetDto("1", "Test Snippet", "content", "print-script", ".ps", "Author", ComplianceEnum.COMPLIANT)
-    private val createSnippetRequest = CreateSnippetRequest("Test Snippet", "Content", "print-script", ".ps")
-    private val updateSnippetRequest = UpdateSnippetRequest("Updated Content")
-    private val shareSnippetRequest = ShareSnippetRequest("UserId")
+    private val snippetDTO = SnippetDTO("1", "Test Snippet", "content", "print-script", ".ps", "Author", ComplianceEnum.COMPLIANT)
+    private val createSnippetDTO = CreateSnippetDTO("Test Snippet", "Content", "print-script", ".ps")
+    private val updateSnippetRequest = UpdateSnippetDTO("1", "Updated Content")
 
     @BeforeEach
     fun setup() {
@@ -47,25 +45,25 @@ class SnippetControllerTest {
 
     @Test
     fun `test 001 - should create a snippet`() {
-        given(snippetService.saveSnippet(createSnippetRequest, jwt.subject)).willReturn(snippetDto)
+        given(snippetService.saveSnippet(createSnippetDTO, jwt.subject)).willReturn(snippetDTO)
 
-        val response: ResponseEntity<SnippetDto> = snippetController.createSnippet(jwt, createSnippetRequest)
+        val response = snippetController.createSnippet(jwt, createSnippetDTO)
 
         assertNotNull(response)
         assertEquals(HttpStatus.OK, response.statusCode)
-        assertEquals(snippetDto, response.body)
+        assertEquals(snippetDTO, response.body)
     }
 
     @Test
     fun `test 002 - should get all snippets`() {
-        val snippetList = listOf(snippetDto)
+        val snippetList = listOf(snippetDTO)
         given(snippetService.getAllSnippets(anyString(), anyString())).willReturn(snippetList)
 
-        val response: ResponseEntity<List<SnippetDto>> = snippetController.getAllSnippets(jwt, "Test Snippet")
+        val response: ResponseEntity<List<SnippetDTO>> = snippetController.getAllSnippets(jwt, "Test Snippet")
         print(response)
         assertNotNull(response)
         assertEquals(HttpStatus.OK, response.statusCode)
-        assertEquals(listOf(snippetDto), response.body)
+        assertEquals(listOf(snippetDTO), response.body)
     }
 
     @Test
@@ -82,13 +80,13 @@ class SnippetControllerTest {
 
     @Test
     fun `test 004 - should get a snippet`() {
-        given(snippetService.getSnippet("1")).willReturn(snippetDto)
+        given(snippetService.getSnippet("1")).willReturn(snippetDTO)
 
-        val response: ResponseEntity<SnippetDto> = snippetController.getSnippet("1")
+        val response: ResponseEntity<SnippetDTO> = snippetController.getSnippet("1")
 
         assertNotNull(response)
         assertEquals(HttpStatus.OK, response.statusCode)
-        assertEquals(snippetDto, response.body)
+        assertEquals(snippetDTO, response.body)
     }
 
     @Test
@@ -105,22 +103,22 @@ class SnippetControllerTest {
 
     @Test
     fun `test 006 - should update a snippet`() {
-        given(snippetService.updateSnippet(updateSnippetRequest, "1")).willReturn(snippetDto)
+        given(snippetService.updateSnippet(updateSnippetRequest)).willReturn(snippetDTO)
 
-        val response: ResponseEntity<SnippetDto> = snippetController.updateSnippet("1", updateSnippetRequest)
+        val response: ResponseEntity<SnippetDTO> = snippetController.updateSnippet(updateSnippetRequest)
 
         assertNotNull(response)
         assertEquals(HttpStatus.OK, response.statusCode)
-        assertEquals(snippetDto, response.body)
+        assertEquals(snippetDTO, response.body)
     }
 
     @Test
     fun `test 007 - should not update snippet`() {
-        given(snippetService.updateSnippet(updateSnippetRequest, "1")).willThrow(RuntimeException("Error updating snippet"))
+        given(snippetService.updateSnippet(updateSnippetRequest)).willThrow(RuntimeException("Error updating snippet"))
 
         val exception =
             assertThrows<RuntimeException> {
-                snippetController.updateSnippet("1", updateSnippetRequest)
+                snippetController.updateSnippet(updateSnippetRequest)
             }
 
         assertEquals("Error updating snippet", exception.message)
@@ -128,22 +126,22 @@ class SnippetControllerTest {
 
     @Test
     fun `test 008 - should share a snippet`() {
-        given(snippetService.shareSnippet(shareSnippetRequest, "1")).willReturn(snippetDto)
+        given(snippetService.shareSnippet("2", "1")).willReturn(snippetDTO)
 
-        val response: ResponseEntity<SnippetDto> = snippetController.shareSnippet("1", shareSnippetRequest)
+        val response = snippetController.shareSnippet("1", "2")
 
         assertNotNull(response)
         assertEquals(HttpStatus.OK, response.statusCode)
-        assertEquals(snippetDto, response.body)
+        assertEquals(snippetDTO, response.body)
     }
 
     @Test
     fun `test 009 - should not share the snippet`() {
-        given(snippetService.shareSnippet(shareSnippetRequest, "1")).willThrow(RuntimeException("Error sharing snippet"))
+        given(snippetService.shareSnippet("2", "1")).willThrow(RuntimeException("Error sharing snippet"))
 
         val exception =
             assertThrows<RuntimeException> {
-                snippetController.shareSnippet("1", shareSnippetRequest)
+                snippetController.shareSnippet("1", "2")
             }
 
         assertEquals("Error sharing snippet", exception.message)

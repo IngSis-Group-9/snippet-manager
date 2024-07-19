@@ -13,7 +13,6 @@ import org.mockito.Mockito.mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.http.HttpStatus
 import org.springframework.security.oauth2.jwt.Jwt
-import java.util.Optional
 
 @ExtendWith(MockitoExtension::class)
 class UserControllerTest {
@@ -53,7 +52,7 @@ class UserControllerTest {
                 name = "Test User",
                 email = "test@example.com",
             )
-        given(userService.findUserById("1")).willReturn(Optional.of(user))
+        given(userService.findUserById("1")).willReturn(user)
 
         val response = userController.findUserById("1")
 
@@ -63,14 +62,7 @@ class UserControllerTest {
     }
 
     @Test
-    fun `test 003 - should return not found if user does not exist`() {
-        val response = userController.findUserById("1")
-        assertNotNull(response)
-        assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
-    }
-
-    @Test
-    fun `test 004 - should find friends by name`() {
+    fun `test 003 - should find friends by name`() {
         val userId = "1"
         val friends =
             listOf(

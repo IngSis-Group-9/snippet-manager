@@ -6,11 +6,11 @@ import org.junit.jupiter.api.Test
 class TestCaseDTOTest {
     @Test
     fun testTestCaseDTO() {
-        val testCaseDTO = TestCaseDTO("Test Case", listOf("input"), listOf("output"), "variable", "id")
+        val testCaseDTO = TestCaseDTO("1", "Test Case", listOf("input"), listOf("output"), "variable", "snippetId")
         assertEquals("Test Case", testCaseDTO.name)
-        assertEquals(listOf("input"), testCaseDTO.input)
-        assertEquals(listOf("output"), testCaseDTO.output)
+        assertEquals(listOf("input"), testCaseDTO.inputs)
+        assertEquals(listOf("output"), testCaseDTO.outputs)
         assertEquals("variable", testCaseDTO.envVars)
-        assertEquals("id", testCaseDTO.snippetId)
+        assertEquals("snippetId", testCaseDTO.snippetId)
     }
 }

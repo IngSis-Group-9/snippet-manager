@@ -1,8 +1,9 @@
 package com.ingsis.snippetmanager.controller
 
+import com.ingsis.snippetmanager.model.dto.CreateTestCaseDTO
 import com.ingsis.snippetmanager.model.dto.TestCaseDTO
+import com.ingsis.snippetmanager.model.dto.TestCaseResultDTO
 import com.ingsis.snippetmanager.model.entity.Snippet
-import com.ingsis.snippetmanager.model.entity.TestCase
 import com.ingsis.snippetmanager.model.entity.User
 import com.ingsis.snippetmanager.model.enums.ComplianceEnum
 import com.ingsis.snippetmanager.service.TestCaseService
@@ -12,11 +13,13 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.BDDMockito.doNothing
 import org.mockito.BDDMockito.given
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.http.HttpStatus
+import org.springframework.security.oauth2.jwt.Jwt
 
 @ExtendWith(MockitoExtension::class)
 class TestCaseControllerTest {
@@ -26,10 +29,12 @@ class TestCaseControllerTest {
     @InjectMocks
     private lateinit var testCaseController: TestCaseController
 
+    private lateinit var jwt: Jwt
     private lateinit var user: User
     private lateinit var snippet: Snippet
-    private lateinit var testCase: TestCase
     private lateinit var testCaseDTO: TestCaseDTO
+    private lateinit var createTestCaseDTO: CreateTestCaseDTO
+    private lateinit var testCaseResultDTO: TestCaseResultDTO
 
     @BeforeEach
     fun setup() {
@@ -51,8 +56,8 @@ class TestCaseControllerTest {
 
         user.ownedSnippets.plus(snippet)
 
-        testCaseDTO =
-            TestCaseDTO(
+        createTestCaseDTO =
+            CreateTestCaseDTO(
                 name = "Test Case",
                 input = listOf("input1", "input2"),
                 output = listOf("output1", "output2"),
@@ -60,33 +65,44 @@ class TestCaseControllerTest {
                 snippetId = "1",
             )
 
-        testCase =
-            TestCase(
+        testCaseDTO =
+            TestCaseDTO(
+                id = "1",
                 name = "Test Case",
-                input = listOf("input1", "input2"),
-                output = listOf("output1", "output2"),
-                envVars = mapOf("VAR1" to "value1", "VAR2" to "value2"),
-                snippet = snippet,
+                inputs = listOf("input1", "input2"),
+                outputs = listOf("output1", "output2"),
+                envVars = "VAR1: value1, VAR2: value2",
+                snippetId = "1",
             )
+
+        jwt =
+            Jwt
+                .withTokenValue("token")
+                .header("alg", "none")
+                .claim("sub", "author")
+                .build()
+
+        testCaseResultDTO = TestCaseResultDTO(true)
     }
 
     @Test
     fun `test 001 - should create a test case`() {
-        given(testCaseService.createTestCase(testCaseDTO)).willReturn(testCase)
+        given(testCaseService.createTestCase(createTestCaseDTO)).willReturn(testCaseDTO)
 
-        val response: TestCase = testCaseController.createTestCase(testCaseDTO)
+        val response = testCaseController.createTestCase(createTestCaseDTO)
 
         assertNotNull(response)
-        assertEquals(testCase, response)
+        assertEquals(HttpStatus.OK, response.statusCode)
+        assertEquals(testCaseDTO, response.body)
     }
 
     @Test
     fun `test 002 - should not create a test case`() {
-        given(testCaseService.createTestCase(testCaseDTO)).willThrow(RuntimeException("Error creating test case"))
+        given(testCaseService.createTestCase(createTestCaseDTO)).willThrow(RuntimeException("Error creating test case"))
 
         val exception =
             assertThrows<RuntimeException> {
-                testCaseController.createTestCase(testCaseDTO)
+                testCaseController.createTestCase(createTestCaseDTO)
             }
 
         assertEquals("Error creating test case", exception.message)
@@ -94,7 +110,7 @@ class TestCaseControllerTest {
 
     @Test
     fun `test 003 - should get a test case by snippet id`() {
-        val testCases = listOf(testCase)
+        val testCases = listOf(testCaseDTO)
         given(testCaseService.getTestCasesBySnippetId("1")).willReturn(testCases)
 
         val response = testCaseController.getTestCasesBySnippetId("1")
@@ -118,13 +134,13 @@ class TestCaseControllerTest {
 
     @Test
     fun `test 005 - should remove a test case`() {
-        given(testCaseService.removeTestCase("1")).willReturn("Test case removed successfully")
+        doNothing().`when`(testCaseService).removeTestCase("1")
 
         val response = testCaseController.removeTestCase("1")
 
         assertNotNull(response)
         assertEquals(HttpStatus.OK, response.statusCode)
-        assertEquals("Test case removed successfully", response.body)
+        assertEquals(Unit, response.body)
     }
 
     @Test
@@ -137,5 +153,27 @@ class TestCaseControllerTest {
             }
 
         assertEquals("Error removing test case", exception.message)
+    }
+
+    @Test
+    fun `test 007 - should run a test case`() {
+        given(testCaseService.runTestCase("1", "token")).willReturn(testCaseResultDTO)
+
+        val response = testCaseController.runTestCase("1", jwt)
+
+        assertNotNull(response)
+        assertEquals(HttpStatus.OK, response.statusCode)
+        assertEquals(true, response.body?.hasPassed)
+    }
+
+    @Test
+    fun `test 008 - should remove a test case`() {
+        doNothing().`when`(testCaseService).removeTestCase("1")
+
+        val response = testCaseController.removeTestCase("1")
+
+        assertNotNull(response)
+        assertEquals(HttpStatus.OK, response.statusCode)
+        assertEquals(Unit, response.body)
     }
 }

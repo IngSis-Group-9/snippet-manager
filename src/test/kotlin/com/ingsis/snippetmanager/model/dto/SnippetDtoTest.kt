@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test
 class SnippetDtoTest {
     @Test
     fun testSnippetDto() {
-        val snippetDto = SnippetDto("id", "name", "content", "language", "extension", "user", ComplianceEnum.COMPLIANT)
+        val snippetDto = SnippetDTO("id", "name", "content", "language", "extension", "user", ComplianceEnum.COMPLIANT)
         assertEquals("id", snippetDto.id)
         assertEquals("name", snippetDto.name)
         assertEquals("content", snippetDto.content)

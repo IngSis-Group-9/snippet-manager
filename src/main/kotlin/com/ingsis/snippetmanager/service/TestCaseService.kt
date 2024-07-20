@@ -2,6 +2,7 @@ package com.ingsis.snippetmanager.service
 
 import com.ingsis.snippetmanager.exception.NotFoundException
 import com.ingsis.snippetmanager.model.dto.CreateTestCaseDTO
+import com.ingsis.snippetmanager.model.dto.RunTestDTO
 import com.ingsis.snippetmanager.model.dto.TestCaseDTO
 import com.ingsis.snippetmanager.model.dto.TestCaseResultDTO
 import com.ingsis.snippetmanager.model.dto.UpdateTestCaseDTO
@@ -18,7 +19,7 @@ class TestCaseService(
     private val processingService: CodeProcessingService,
     private val assetService: AssetService,
 ) {
-    private val log = org.slf4j.LoggerFactory.getLogger(SnippetService::class.java)
+    private val log = org.slf4j.LoggerFactory.getLogger(TestCaseService::class.java)
 
     @Transactional
     fun createTestCase(testCaseDTO: CreateTestCaseDTO): TestCaseDTO {
@@ -44,25 +45,23 @@ class TestCaseService(
             savedTestCase.name,
             savedTestCase.input,
             savedTestCase.output,
-            savedTestCase.envVars.map { entry -> "${entry.key}:${entry.value}" }.joinToString(","),
-            savedTestCase.snippet.id!!,
+            savedTestCase.envVars.map { entry -> "${entry.key}:${entry.value}" }.joinToString(",")
         )
     }
 
     fun getTestCasesBySnippetId(snippetId: String): List<TestCaseDTO> {
-        val snippet =
-            snippetRepository.findById(snippetId).orElseThrow {
+        val snippet = snippetRepository.findById(snippetId).orElseThrow {
                 log.error("Snippet with id: $snippetId not found")
                 NotFoundException("Snippet with id: $snippetId not found")
-            }
+        }
+
         return testCaseRepository.findAllBySnippet(snippet).map {
             TestCaseDTO(
                 it.id!!,
                 it.name,
                 it.input,
                 it.output,
-                it.envVars.map { entry -> "${entry.key}:${entry.value}" }.joinToString(","),
-                it.snippet.id!!,
+                it.envVars.map { entry -> "${entry.key}:${entry.value}" }.joinToString(",")
             )
         }
     }
@@ -86,19 +85,17 @@ class TestCaseService(
             updatedTestCase.input,
             updatedTestCase.output,
             updatedTestCase.envVars.map { entry -> "${entry.key}:${entry.value}" }.joinToString(","),
-            updatedTestCase.snippet.id!!,
         )
     }
 
     fun runTestCase(
-        id: String,
+        testCaseDto: RunTestDTO,
         token: String,
     ): TestCaseResultDTO {
-        val testCase =
-            testCaseRepository.findById(id).orElseThrow {
-                log.error("Test case with id: $id not found")
-                NotFoundException("Test case with id: $id not found")
-            }
+        val testCase = testCaseRepository.findById(testCaseDto.id).orElseThrow {
+            log.error("Test case with id: ${testCaseDto.id} not found")
+            throw NotFoundException("Test case with id: ${testCaseDto.id} not found")
+        }
 
         val snippet = assetService.getSnippet(testCase.snippet.id!!)
         if (!snippet.statusCode.is2xxSuccessful) {
@@ -109,21 +106,22 @@ class TestCaseService(
         val interpretResponse =
             processingService.interpretSnippet(
                 snippet.body!!,
-                testCase.input,
-                testCase.envVars,
+                testCaseDto.input,
+                parseStringToMap(testCaseDto.envVars),
                 token,
             )
 
         if (!interpretResponse.statusCode.is2xxSuccessful) {
-            log.error("Error running test case with id: $id")
-            throw RuntimeException("Error running test case with id: $id")
+            log.error("Error running test case for snippet: ${testCase.snippet.id}")
+            throw RuntimeException("Error running test case for snippet: ${testCase.snippet.id}")
         }
 
         if (interpretResponse.body!!.errors.isNotEmpty() || interpretResponse.body!!.outputs != testCase.output) {
-            log.info("Test case with id: $id failed")
+            log.info("Test case for snippet: ${testCase.snippet.id} failed")
             return TestCaseResultDTO(false)
         }
 
+        log.info("Test case for snippet: ${testCase.snippet.id} passed")
         return TestCaseResultDTO(true)
     }
 
@@ -137,6 +135,7 @@ class TestCaseService(
     }
 
     private fun parseStringToMap(envVars: String): Map<String, String> {
+        if (envVars.isBlank()) return emptyMap()
         val map = mutableMapOf<String, String>()
         envVars.split(",").forEach {
             val pair = it.split(":")

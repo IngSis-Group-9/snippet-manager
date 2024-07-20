@@ -103,15 +103,15 @@ class SnippetService(
     }
 
     @Transactional
-    fun updateSnippet(updateSnippetDTO: UpdateSnippetDTO): SnippetDTO {
+    fun updateSnippet(id: String, updateSnippetDTO: UpdateSnippetDTO): SnippetDTO {
         val snippet =
-            snippetRepository.findById(updateSnippetDTO.id).orElseThrow {
-                log.error("Snippet with id: ${updateSnippetDTO.id} not found")
-                NotFoundException("Snippet with id: ${updateSnippetDTO.id} not found")
+            snippetRepository.findById(id).orElseThrow {
+                log.error("Snippet with id: ${id} not found")
+                NotFoundException("Snippet with id: ${id} not found")
             }
         val deleteResponse = assetService.deleteSnippet(snippet.id!!)
         if (!deleteResponse.statusCode.is2xxSuccessful) {
-            throw ServiceUnavailableException("Error deleting snippet content id: ${updateSnippetDTO.id}")
+            throw ServiceUnavailableException("Error deleting snippet content id: ${id}")
         }
 
         val updateResponse = assetService.saveSnippet(snippet.id, updateSnippetDTO.content)

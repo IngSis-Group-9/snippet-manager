@@ -1,9 +1,11 @@
 package com.ingsis.snippetmanager.service
 
+import com.ingsis.snippetmanager.logs.CorrelationIdFilter.Companion.CORRELATION_ID_KEY
 import com.ingsis.snippetmanager.model.dto.FormatterRequest
 import com.ingsis.snippetmanager.model.dto.FormatterRulesDTO
 import com.ingsis.snippetmanager.model.dto.InterpretRequest
 import com.ingsis.snippetmanager.model.dto.InterpretResponse
+import com.newrelic.agent.deps.org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -17,7 +19,7 @@ class CodeProcessingService(
     private val rest: RestTemplate,
     @Value("\${codeProcessing.url}") val runnerUrl: String,
 ) {
-    private val log = org.slf4j.LoggerFactory.getLogger(AssetService::class.java)
+    private val log = org.slf4j.LoggerFactory.getLogger(CodeProcessingService::class.java)
 
     fun interpretSnippet(
         snippet: String,
@@ -43,8 +45,10 @@ class CodeProcessingService(
         try {
             log.info("Sending format request with content: $snippet, formatterRules: $formatterRules")
             val request = HttpEntity(FormatterRequest(snippet, formatterRules), getHeaders(token))
-            return rest.postForEntity("$runnerUrl/format", request, String::class.java)
+            val response = rest.postForEntity("$runnerUrl/format", request, String::class.java)
+            return response
         } catch (e: Exception) {
+            log.error("Error while formatting snippet", e)
             return ResponseEntity.badRequest().build()
         }
     }
@@ -53,5 +57,6 @@ class CodeProcessingService(
         HttpHeaders().apply {
             contentType = MediaType.APPLICATION_JSON
             set("Authorization", "Bearer $token")
+            set("X-Correlation-Id", MDC.get(CORRELATION_ID_KEY))
         }
 }

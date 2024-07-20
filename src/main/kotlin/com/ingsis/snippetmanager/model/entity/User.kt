@@ -10,11 +10,11 @@ import jakarta.persistence.Table
 @Table(name = "users")
 data class User(
     @Id
-    override val id: String,
+    val id: String,
     val name: String,
     val email: String,
     @OneToMany(mappedBy = "owner")
     val ownedSnippets: Set<Snippet> = HashSet(),
     @ManyToMany(mappedBy = "sharedWith")
     val sharedSnippets: Set<Snippet> = HashSet(),
-) : BaseEntity()
+)

@@ -22,7 +22,7 @@ class UserRuleService(
     private val linterRequestProducer: LinterRequestProducer,
     private val snippetService: SnippetService,
 ) {
-    private val log = org.slf4j.LoggerFactory.getLogger(UserService::class.java)
+    private val log = org.slf4j.LoggerFactory.getLogger(UserRuleService::class.java)
 
     private val defaultLinterRules =
         listOf(

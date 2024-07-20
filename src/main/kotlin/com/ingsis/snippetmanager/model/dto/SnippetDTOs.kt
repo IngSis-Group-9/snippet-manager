@@ -25,8 +25,7 @@ data class CreateSnippetDTO(
 )
 
 data class UpdateSnippetDTO(
-    val id: String,
-    val content: String,
+    val content: String
 )
 
 data class SnippetContentDTO(

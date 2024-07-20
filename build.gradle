@@ -7,6 +7,7 @@ plugins {
 	id 'org.jetbrains.kotlin.plugin.spring' version '1.9.23'
 	id 'org.jetbrains.kotlin.plugin.jpa' version '1.9.23'
     id 'jacoco'
+    id "de.undercouch.download" version "5.3.0"
 }
 
 group = 'com.ingsis'
@@ -43,6 +44,8 @@ dependencies {
     implementation 'org.projectlombok:lombok:1.18.34'
     annotationProcessor 'org.projectlombok:lombok:1.18.34'
     implementation 'org.austral.ingsis:redis-streams-mvc:0.1.13'
+    implementation 'com.newrelic.agent.java:newrelic-agent:7.2.0'
+
     runtimeOnly 'org.postgresql:postgresql'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -111,3 +114,15 @@ jacocoTestReport {
         html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
     }
 }
+
+task downloadNewrelic(type: Download) {
+    mkdir 'newrelic'
+    src 'https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip'
+    dest file('newrelic')
+}
+
+task unzipNewrelic(type: Copy) {
+    from zipTree(file('newrelic/newrelic-java.zip'))
+    into rootDir
+}
+

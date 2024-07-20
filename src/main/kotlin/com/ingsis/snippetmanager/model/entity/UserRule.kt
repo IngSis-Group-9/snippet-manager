@@ -1,5 +1,6 @@
 package com.ingsis.snippetmanager.model.entity
 
+import jakarta.persistence.CascadeType
 import jakarta.persistence.Entity
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
@@ -11,7 +12,7 @@ data class UserRule(
     val owner: User,
     var value: String,
     var isActive: Boolean,
-    @ManyToOne
+    @ManyToOne(cascade = [CascadeType.PERSIST])
     @JoinColumn(name = "rule_id", nullable = false)
     val rule: Rule,
 ) : BaseEntity()

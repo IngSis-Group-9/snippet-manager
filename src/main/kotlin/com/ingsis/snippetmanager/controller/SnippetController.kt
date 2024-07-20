@@ -41,10 +41,11 @@ class SnippetController(
         @PathVariable id: String,
     ): ResponseEntity<SnippetDTO> = ResponseEntity.ok(snippetService.getSnippet(id))
 
-    @PutMapping
+    @PutMapping("/{id}")
     fun updateSnippet(
+        @PathVariable id: String,
         @RequestBody updateSnippetDTO: UpdateSnippetDTO,
-    ): ResponseEntity<SnippetDTO> = ResponseEntity.ok(snippetService.updateSnippet(updateSnippetDTO))
+    ): ResponseEntity<SnippetDTO> = ResponseEntity.ok(snippetService.updateSnippet(id, updateSnippetDTO))
 
     @PostMapping("/{id}/share/{shareId}")
     fun shareSnippet(

@@ -39,20 +39,6 @@ class AssetService(
         }
     }
 
-    fun updateSnippet(
-        id: String,
-        content: String,
-    ): ResponseEntity<String> {
-        try {
-            log.info("Updating snippet: { id: $id, content: $content })")
-            val request = HttpEntity(content, getHeaders())
-            return rest.postForEntity("$bucketUrl/$id", request, String::class.java)
-        } catch (e: Exception) {
-            log.error("Error updating snippet with id: $id", e)
-            return ResponseEntity.badRequest().build()
-        }
-    }
-
     fun deleteSnippet(id: String): ResponseEntity<String> {
         try {
             log.info("Deleting snippet: { id: $id })")

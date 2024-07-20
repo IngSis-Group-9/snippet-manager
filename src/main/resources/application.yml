@@ -21,6 +21,11 @@ spring:
           issuer-uri: https://dev-n5rdb5xcsb4ya1cg.us.auth0.com/
           client-id: ${AUTH_CLIENT_ID}
           client-secret: ${AUTH_CLIENT_SECRET}
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+
 redis:
   stream:
     request_linter_key: ${REDIS_STREAM_REQUEST_LINTER_KEY:request_linter}
@@ -29,12 +34,10 @@ redis:
     linter: ${REDIS_GROUP_LINTER:linter_group}
 
 server:
-  servlet:
-    context-path: /snippet-manager
   port: 8083
   error:
     include-message: always
 azureBucket:
-  url: ${AZURE_BUCKET_URL:http://asset_service:8080/v1/asset/snippets}
+  url: ${AZURE_BUCKET_URL:http://localhost:8081/v1/asset/snippets}
 codeProcessing:
-  url: ${CODE_PROCESSING_URL:http://code_processing:8081}
+  url: ${CODE_PROCESSING_URL:http://localhost:8084/code-processing}

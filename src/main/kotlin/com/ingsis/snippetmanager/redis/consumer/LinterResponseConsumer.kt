@@ -1,7 +1,6 @@
 package com.ingsis.snippetmanager.redis.consumer
 
 import com.ingsis.snippetmanager.service.SnippetService
-import com.ingsis.snippetmanager.service.UserService
 import org.austral.ingsis.redis.RedisStreamConsumer
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.redis.connection.stream.ObjectRecord
@@ -16,7 +15,10 @@ class LinterResponseConsumer(
     redis: RedisTemplate<String, String>,
     private val snippetService: SnippetService,
 ) : RedisStreamConsumer<LinterResponse>(streamKey, groupId, redis) {
-    private val log = org.slf4j.LoggerFactory.getLogger(UserService::class.java)
+    init {
+        subscription()
+    }
+    private val log = org.slf4j.LoggerFactory.getLogger(LinterResponseConsumer::class.java)
 
     override fun onMessage(record: ObjectRecord<String, LinterResponse>) {
         log.info("Consuming linter response for Snippet(${record.value.snippetId}) for User(${record.value.userId})")

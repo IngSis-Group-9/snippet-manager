@@ -9,7 +9,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -27,7 +27,7 @@ class RuleController(
         @AuthenticationPrincipal jwt: Jwt,
     ): ResponseEntity<List<UserRuleDTO>> = ResponseEntity.ok(userRuleService.getUserRulesByType(jwt.subject, ruleType))
 
-    @PutMapping
+    @PostMapping
     suspend fun updateUserRules(
         @RequestBody userRules: List<UpdateUserRuleDTO>,
         @AuthenticationPrincipal jwt: Jwt,

@@ -1,6 +1,7 @@
 package com.ingsis.snippetmanager.controller
 
 import com.ingsis.snippetmanager.model.dto.CreateTestCaseDTO
+import com.ingsis.snippetmanager.model.dto.RunTestDTO
 import com.ingsis.snippetmanager.model.dto.TestCaseDTO
 import com.ingsis.snippetmanager.model.dto.TestCaseResultDTO
 import com.ingsis.snippetmanager.model.dto.UpdateTestCaseDTO
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin("*")
@@ -30,9 +30,9 @@ class TestCaseController(
         @RequestBody testCaseDTO: CreateTestCaseDTO,
     ): ResponseEntity<TestCaseDTO> = ResponseEntity.ok(testCaseService.createTestCase(testCaseDTO))
 
-    @GetMapping
+    @GetMapping("/{snippetId}")
     fun getTestCasesBySnippetId(
-        @RequestParam snippetId: String,
+        @PathVariable snippetId: String,
     ): ResponseEntity<List<TestCaseDTO>> = ResponseEntity.ok(testCaseService.getTestCasesBySnippetId(snippetId))
 
     @PutMapping
@@ -40,11 +40,11 @@ class TestCaseController(
         @RequestBody testCaseDTO: UpdateTestCaseDTO,
     ): ResponseEntity<TestCaseDTO> = ResponseEntity.ok(testCaseService.updateTestCase(testCaseDTO))
 
-    @PostMapping("/run/{id}")
+    @PostMapping("/run")
     fun runTestCase(
-        @PathVariable id: String,
+        @RequestBody testCase: RunTestDTO,
         @AuthenticationPrincipal jwt: Jwt,
-    ): ResponseEntity<TestCaseResultDTO> = ResponseEntity.ok(testCaseService.runTestCase(id, jwt.tokenValue))
+    ): ResponseEntity<TestCaseResultDTO> = ResponseEntity.ok(testCaseService.runTestCase(testCase, jwt.tokenValue))
 
     @DeleteMapping("/{id}")
     fun removeTestCase(

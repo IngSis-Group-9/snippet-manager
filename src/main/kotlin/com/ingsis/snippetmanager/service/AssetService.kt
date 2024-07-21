@@ -1,5 +1,7 @@
 package com.ingsis.snippetmanager.service
 
+import com.ingsis.snippetmanager.logs.CorrelationIdFilter.Companion.CORRELATION_ID_KEY
+import com.newrelic.agent.deps.org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -53,5 +55,6 @@ class AssetService(
     private fun getHeaders(): HttpHeaders =
         HttpHeaders().apply {
             contentType = MediaType.APPLICATION_JSON
+            set("X-Correlation-Id", MDC.get(CORRELATION_ID_KEY))
         }
 }

@@ -11,6 +11,7 @@ import org.springframework.web.filter.OncePerRequestFilter
 @Order(Ordered.HIGHEST_PRECEDENCE + 1)
 @Component
 class RequestLogFilter : OncePerRequestFilter() {
+    private val logger = org.slf4j.LoggerFactory.getLogger(RequestLogFilter::class.java)
 
     override fun doFilterInternal(
         request: HttpServletRequest,
